@@ -107,7 +107,14 @@ var reGetStringBogusConcatenation1 = new RegExp(/(^R|\WR)B\.getString(JS)?\s*\(\
 var reGetStringBogusConcatenation2 = new RegExp(/(^R|\WR)B\.getString(JS)?\s*\([^\)]*\+\s*("[^"]*"|'[^']*')\s*\)/g);
 var reGetStringBogusParam = new RegExp(/(^R|\WR)B\.getString(JS)?\s*\([^"'\)]*\)/g);
 
-var reGetLocString = new RegExp(/resBundle_getLocString?\s*\(\s*("((\\"|[^"])*)"|'((\\'|[^'])*)')\s*\)/g);
+var reGetLocString = new RegExp(/resBundle_getLocString\((\w*)\,\s*[\"|\'](.*)*[\"|\']\)/g);
+
+var reGetString = new RegExp(/(^[R|r]|\W[R|r|])[B|b]\.getString(JS)?\s*\(\s*("((\\"|[^"])*)"|'((\\'|[^'])*)')\s*\)/g);
+var reGetStringSymbol = new RegExp(/(^\$|\W\$)L?\s*\(\s*("((\\"|[^"])*)"|'((\\'|[^'])*)')\s*\)/g);
+var reGetStringSymbolKeyValuePattern = new RegExp(/^\$|\W\$L?\s*\(\s*{(key|value)\:\s*("((\\"|[^"])*)"|'((\\'|[^'])*)')\,\s*(key|value)\:("((\\"|[^"])*)"|'((\\'|[^'])*)')\}\)/g);
+
+var reGetStringWithId = new RegExp(/(^[R|r]|\W[R|r])[B|b]\.getString(JS)?\s*\(\s*("((\\"|[^"])*)"|'((\\'|[^'])*)')\s*,\s*("((\\"|[^"])*)"|'((\\'|[^'])*)')\s*\)/g);
+
 var reI18nComment = new RegExp("//\\s*i18n\\s*:\\s*(.*)$");
 
 /**
@@ -121,18 +128,18 @@ CFile.prototype.parse = function(data) {
 
     var comment, match, key;
 
-    reGetString.lastIndex = 0; // just to be safe
+    reGetLocString.lastIndex = 0; // just to be safe
     var result = reGetLocString.exec(data);
-    while (result && result.length > 1 && result[3]) {
+    while (result && result.length > 1 && result[2]) {
         // different matches for single and double quotes
-        match = (result[3][0] === '"') ? result[4] : result[6];
+        match = result[2];
 
         if (match && match.length) {
             logger.trace("Found string key: " + this.makeKey(match) + ", string: '" + match + "'");
 
-            var last = data.indexOf('\n', reGetString.lastIndex);
+            var last = data.indexOf('\n', reGetLocString.lastIndex);
             last = (last === -1) ? data.length : last;
-            var line = data.substring(reGetString.lastIndex, last);
+            var line = data.substring(reGetLocString.lastIndex, last);
             var commentResult = reI18nComment.exec(line);
             comment = (commentResult && commentResult.length > 1) ? commentResult[1] : undefined;
 
@@ -154,46 +161,7 @@ CFile.prototype.parse = function(data) {
             logger.warn("Warning: Bogus empty string in get string call: ");
             logger.warn("... " + data.substring(result.index, reGetString.lastIndex) + " ...");
         }
-        result = reGetString.exec(data);
-    }
-
-    // just to be safe
-    reI18nComment.lastIndex = 0;
-    reGetStringWithId.lastIndex = 0;
-
-    result = reGetStringWithId.exec(data);
-    while (result && result.length > 2 && result[3] && result[8]) {
-        // different matches for single and double quotes
-        match = (result[3][0] === '"') ? result[4] : result[6];
-        key = (result[8][0] === '"') ? result[9] : result[11];
-
-        if (match && key && match.length && key.length) {
-            var last = data.indexOf('\n', reGetStringWithId.lastIndex);
-            last = (last === -1) ? data.length : last;
-            var line = data.substring(reGetStringWithId.lastIndex, last);
-            var commentResult = reI18nComment.exec(line);
-            comment = (commentResult && commentResult.length > 1) ? commentResult[1] : undefined;
-
-            logger.trace("Found string '" + match + "' with unique key " + key + ", comment: " + comment);
-
-            var r = this.API.newResource({
-                resType: "string",
-                project: this.project.getProjectId(),
-                key: key,
-                sourceLocale: this.project.sourceLocale,
-                source: CFile.cleanString(match),
-                pathName: this.pathName,
-                state: "new",
-                comment: comment,
-                datatype: this.type.datatype,
-                index: this.resourceIndex++
-            });
-            this.set.add(r);
-        } else {
-            logger.warn("Warning: Bogus empty string in get string call: ");
-            logger.warn("... " + data.substring(result.index, reGetString.lastIndex) + " ...");
-        }
-        result = reGetStringWithId.exec(data);
+        result = reGetLocString.exec(data);
     }
 
     // now check for and report on errors in the source
