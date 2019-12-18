@@ -24,7 +24,7 @@ var ResBundle = require("ilib/lib/ResBundle.js");
 var log4js = require("log4js");
 
 var CFile = require("./CFile.js");
-var JavaScriptResourceFileType = require("ilib-loctool-webos-json-resource");
+var JsonResourceFileType = require("ilib-loctool-webos-json-resource");
 
 var logger = log4js.getLogger("loctool.plugin.CFileType");
 
@@ -63,7 +63,7 @@ CFileType.prototype.handles = function(pathName) {
 };
 
 CFileType.prototype.name = function() {
-    return "JavaScript File Type";
+    return "C File Type";
 };
 
 /**
@@ -95,7 +95,7 @@ CFileType.prototype.write = function(translations, locales) {
 
         // for each extracted string, write out the translations of it
         translationLocales.forEach(function(locale) {
-            logger.trace("Localizing JavaScript strings to " + locale);
+            logger.trace("Localizing C strings to " + locale);
 
             db.getResourceByCleanHashKey(res.cleanHashKeyForTranslation(locale), function(err, translated) {
                 var r = translated;
@@ -168,7 +168,7 @@ CFileType.prototype.getResourceTypes = function() {
  * need resource files
  */
 CFileType.prototype.getResourceFileType = function() {
-    return JavaScriptResourceFileType;
+    return JsonResourceFileType;
 };
 
 /**

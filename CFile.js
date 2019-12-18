@@ -103,17 +103,8 @@ CFile.prototype.makeKey = function(source) {
     return CFile.unescapeString(source);
 };
 
-var reGetStringBogusConcatenation1 = new RegExp(/(^R|\WR)B\.getString(JS)?\s*\(\s*("[^"]*"|'[^']*')\s*\+/g);
-var reGetStringBogusConcatenation2 = new RegExp(/(^R|\WR)B\.getString(JS)?\s*\([^\)]*\+\s*("[^"]*"|'[^']*')\s*\)/g);
-var reGetStringBogusParam = new RegExp(/(^R|\WR)B\.getString(JS)?\s*\([^"'\)]*\)/g);
-
 var reGetLocString = new RegExp(/resBundle_getLocString\((\w*)\,\s*[\"|\'](.*)*[\"|\']\)/g);
-
-var reGetString = new RegExp(/(^[R|r]|\W[R|r|])[B|b]\.getString(JS)?\s*\(\s*("((\\"|[^"])*)"|'((\\'|[^'])*)')\s*\)/g);
-var reGetStringSymbol = new RegExp(/(^\$|\W\$)L?\s*\(\s*("((\\"|[^"])*)"|'((\\'|[^'])*)')\s*\)/g);
-var reGetStringSymbolKeyValuePattern = new RegExp(/^\$|\W\$L?\s*\(\s*{(key|value)\:\s*("((\\"|[^"])*)"|'((\\'|[^'])*)')\,\s*(key|value)\:("((\\"|[^"])*)"|'((\\'|[^'])*)')\}\)/g);
-
-var reGetStringWithId = new RegExp(/(^[R|r]|\W[R|r])[B|b]\.getString(JS)?\s*\(\s*("((\\"|[^"])*)"|'((\\'|[^'])*)')\s*,\s*("((\\"|[^"])*)"|'((\\'|[^'])*)')\s*\)/g);
+var reGetLocStringWithKey = new RegExp(/resBundle_getLocStringWithKey\((\w*)\,\s*[\"|\'](.*)[\"|\']\,\s*[\"|\'](.*)*[\"|\']\)/g);
 
 var reI18nComment = new RegExp("//\\s*i18n\\s*:\\s*(.*)$");
 
@@ -128,6 +119,7 @@ CFile.prototype.parse = function(data) {
 
     var comment, match, key;
 
+    // To extract resBundle_getLocString()
     reGetLocString.lastIndex = 0; // just to be safe
     var result = reGetLocString.exec(data);
     while (result && result.length > 1 && result[2]) {
@@ -164,21 +156,47 @@ CFile.prototype.parse = function(data) {
         result = reGetLocString.exec(data);
     }
 
-    // now check for and report on errors in the source
-    this.API.utils.generateWarnings(data, reGetStringBogusConcatenation1,
-        "Warning: string concatenation is not allowed in the RB.getString() parameters:",
-        logger,
-        this.pathName);
+    // To extract resBundle_getLocStringWithKey()
+    reGetLocStringWithKey.lastIndex = 0; // just to be safe
+    var result = reGetLocStringWithKey.exec(data);
+    while (result && result.length > 1 && result[2]) {
+        // different matches for single and double quotes
+        match = result[2];
 
-    this.API.utils.generateWarnings(data, reGetStringBogusConcatenation2,
-        "Warning: string concatenation is not allowed in the RB.getString() parameters:",
-        logger,
-        this.pathName);
+        if (match && match.length) {
+            logger.trace("Found string key: " + this.makeKey(match) + ", string: '" + match + "'");
 
-    this.API.utils.generateWarnings(data, reGetStringBogusParam,
-        "Warning: non-string arguments are not allowed in the RB.getString() parameters:",
-        logger,
-        this.pathName);
+            var last = data.indexOf('\n', reGetLocStringWithKey.lastIndex);
+            last = (last === -1) ? data.length : last;
+            var line = data.substring(reGetLocStringWithKey.lastIndex, last);
+            var commentResult = reI18nComment.exec(line);
+            comment = (commentResult && commentResult.length > 1) ? commentResult[1] : undefined;
+
+            var r = this.API.newResource({
+                resType: "string",
+                project: this.project.getProjectId(),
+                key: CFile.unescapeString(match),
+                sourceLocale: this.project.sourceLocale,
+                source: CFile.cleanString(match),
+                autoKey: true,
+                pathName: this.pathName,
+                state: "new",
+                comment: comment,
+                datatype: this.type.datatype,
+                index: this.resourceIndex++
+            });
+            this.set.add(r);
+        } else {
+            logger.warn("Warning: Bogus empty string in get string call: ");
+            logger.warn("... " + data.substring(result.index, reGetString.lastIndex) + " ...");
+        }
+        result = reGetLocStringWithKey.exec(data);
+    }
+    /*console.log("!!!!!!!!");
+    for (var i=0; i < this.set.resources.length; i++) {
+        console.log(i + ":  ", this.set.resources[i].source);
+    }*/
+
 };
 
 /**
