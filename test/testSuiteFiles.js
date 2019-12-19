@@ -18,6 +18,6 @@
  */
 
 module.exports.files = [
-    "testCFile.js",
-    "testCFileType.js"
+    "testCFileType.js",
+    "testCFile.js"
 ];

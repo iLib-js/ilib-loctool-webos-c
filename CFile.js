@@ -103,8 +103,8 @@ CFile.prototype.makeKey = function(source) {
     return CFile.unescapeString(source);
 };
 
-var reGetLocString = new RegExp(/resBundle_getLocString\((\w*)\,\s*[\"|\'](.*)*[\"|\']\)/g);
-var reGetLocStringWithKey = new RegExp(/resBundle_getLocStringWithKey\((\w*)\,\s*[\"|\'](.*)[\"|\']\,\s*[\"|\'](.*)*[\"|\']\)/g);
+var reGetLocString = new RegExp(/resBundle_getLocString\((.*)\,\s*[\"|\'](.*)*[\"|\']\)/g);
+var reGetLocStringWithKey = new RegExp(/resBundle_getLocStringWithKey\((.*)\,\s*[\"|\'](.*)[\"|\']\,\s*[\"|\'](.*)*[\"|\']\)/g);
 
 var reI18nComment = new RegExp("//\\s*i18n\\s*:\\s*(.*)$");
 

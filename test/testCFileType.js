@@ -39,30 +39,46 @@ module.exports.cfiletype = {
         test.done();
     },
 
-    testCFileTypeHandlesJSTrue: function(test) {
+    testCFileTypeHandlesCFileTrue: function(test) {
         test.expect(2);
 
         var cft = new CFileType(p);
         test.ok(cft);
-        test.ok(htf.handles("foo.c"));
+        test.ok(cft.handles("foo.c"));
+        test.done();
+    },
+    testCFileTypeHandlesCFileTrue2: function(test) {
+        test.expect(2);
+
+        var cft = new CFileType(p);
+        test.ok(cft);
+        test.ok(cft.handles("foo/bar/test.c"));
         test.done();
     },
 
-    testCFileTypeHandlesJSXTrue: function(test) {
+    testCFileTypeHandlesJSXFalse: function(test) {
         test.expect(2);
 
         var cft = new CFileType(p);
         test.ok(cft);
-        test.ok(htf.handles("foo.jsx"));
+        test.ok(!cft.handles("foo.jsx"));
+        test.done();
+    },
+    testCFileTypeHandlesCppFalse: function(test) {
+        test.expect(2);
+
+        var cft = new CFileType(p);
+        test.ok(cft);
+        test.ok(!cft.handles("foo.cpp"));
         test.done();
     },
 
-    testCFileTypeHandlesJSFalseClose: function(test) {
+    testCFileTypeHandlesFalseClose: function(test) {
         test.expect(2);
 
         var cft = new CFileType(p);
         test.ok(cft);
-        test.ok(!htf.handles("foojs"));
+        test.ok(!cft.handles("foojs"));
         test.done();
     }
 };

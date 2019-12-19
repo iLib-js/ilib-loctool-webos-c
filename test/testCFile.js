@@ -31,68 +31,68 @@ var p = new CustomProject({
     locales:["en-GB"]
 });
 
-var jsft = new CFileType(p);
+var cft = new CFileType(p);
 
 module.exports.cfile = {
     testCFileConstructor: function(test) {
         test.expect(1);
 
-        var j = new CFile({project: p});
-        test.ok(j);
+        var cf = new CFile({project: p});
+        test.ok(cf);
         test.done();
     },
 
     testCFileConstructorParams: function(test) {
         test.expect(1);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: "./testfiles/js/t1.c",
-            type: jsft
+            type: cft
         });
 
-        test.ok(j);
+        test.ok(cf);
         test.done();
     },
 
     testCFileConstructorNoFile: function(test) {
         test.expect(1);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
         test.done();
     },
 
     testCFileMakeKey: function(test) {
         test.expect(2);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
-        test.equal(j.makeKey("This is a test"), "This is a test");
+        test.ok(cf);
+        test.equal(cf.makeKey("This is a test"), "This is a test");
         test.done();
     },
 
     testCFileParseSimpleGetByKey: function(test) {
         test.expect(5);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('char *screen_share_58 = (char *)resBundle_getLocString(res_bundle, "OK");');
+        cf.parse('char *screen_share_58 = (char *)resBundle_getLocString(res_bundle, "OK");');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBy({
@@ -109,16 +109,16 @@ module.exports.cfile = {
     testCFileParseSimpleGetBySource: function(test) {
         test.expect(5);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('resBundle_getLocString(res_bundle, "OK");');
+        cf.parse('resBundle_getLocString(res_bundle, "OK");');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBySource("OK");
@@ -132,16 +132,16 @@ module.exports.cfile = {
     testCFileParseSimpleSingleQuotes: function(test) {
         test.expect(5);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
         
-        j.parse("resBundle_getLocString(res_bundle, 'OK');");
+        cf.parse("resBundle_getLocString(res_bundle, 'OK');");
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBySource("OK");
@@ -155,16 +155,16 @@ module.exports.cfile = {
     testCFileParseJSSimpleSingleQuotes: function(test) {
         test.expect(5);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
         
-        j.parse("char *screen_share_58 = (char *)resBundle_getLocString(res_bundle, 'This is a test');");
+        cf.parse("char *screen_share_58 = (char *)resBundle_getLocString(res_bundle, 'This is a test');");
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBySource("This is a test");
@@ -178,16 +178,16 @@ module.exports.cfile = {
     testCFileParseMoreComplexSingleQuotes: function(test) {
         test.expect(5);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('char* alert_msg=(char *)resBundle_getLocString(notification_getResBundle(),"[PIN CODE : %s]<br> Enter this PIN code in your %s within 120 seconds.");');
+        cf.parse('char* alert_msg=(char *)resBundle_getLocString(notification_getResBundle(),"[PIN CODE : %s]<br> Enter this PIN code in your %s within 120 seconds.");');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBySource("[PIN CODE : %s]<br> Enter this PIN code in your %s within 120 seconds.");
@@ -201,17 +201,17 @@ module.exports.cfile = {
     testCFileParseSimpleRightSize: function(test) {
         test.expect(4);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.equal(set.size(), 0);
 
-        j.parse("char *screen_share_58 = (char *)resBundle_getLocString(res_bundle, 'This is a test');");
+        cf.parse("char *screen_share_58 = (char *)resBundle_getLocString(res_bundle, 'This is a test');");
 
         test.ok(set);
 
@@ -223,16 +223,16 @@ module.exports.cfile = {
     testCFileParseSimpleWithTranslatorComment: function(test) {
         test.expect(6);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); // i18n button');
+        cf.parse('char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); // i18n button');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBySource("OK");
@@ -247,15 +247,15 @@ module.exports.cfile = {
     testCFileParseWithKey: function(test) {
         test.expect(5);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('const char* pPicture = resBundle_getLocStringWithKey(resBundle,"PictureMode.Standard", "Standard");');
-        var set = j.getTranslationSet();
+        cf.parse('const char* pPicture = resBundle_getLocStringWithKey(resBundle,"PictureMode.Standard", "Standard");');
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBy({
@@ -271,16 +271,16 @@ module.exports.cfile = {
     testCFileParseWithKeyandComment: function(test) {
         test.expect(5);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('const char* pPicture = resBundle_getLocStringWithKey(resBundle,"PictureMode.Standard", "Standard"); // i18n button');
+        cf.parse('const char* pPicture = resBundle_getLocStringWithKey(resBundle,"PictureMode.Standard", "Standard"); // i18n button');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBy({
@@ -297,16 +297,16 @@ module.exports.cfile = {
     testCFileParseWithKeySingleQuotes: function(test) {
         test.expect(5);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse("const char* pPicture = resBundle_getLocStringWithKey(resBundle,'PictureMode.Standard', 'Standard');");
+        cf.parse("const char* pPicture = resBundle_getLocStringWithKey(resBundle,'PictureMode.Standard', 'Standard');");
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBy({
@@ -322,16 +322,16 @@ module.exports.cfile = {
     testCFileParseJSWithKeySingleQuotes: function(test) {
         test.expect(5);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse("const char* pPicture = resBundle_getLocStringWithKey(resBundle,'PictureMode.Standard', 'Standard');");
+        cf.parse("const char* pPicture = resBundle_getLocStringWithKey(resBundle,'PictureMode.Standard', 'Standard');");
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBy({
@@ -347,16 +347,16 @@ module.exports.cfile = {
     testCFileParseMultiple: function(test) {
         test.expect(8);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('RB.getString("This is a test");\n\ta.parse("This is another test.");\n\t\tRB.getString("This is also a test");');
+        cf.parse('RB.getString("This is a test");\n\ta.parse("This is another test.");\n\t\tRB.getString("This is also a test");');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBySource("This is a test");
@@ -375,16 +375,16 @@ module.exports.cfile = {
     testCFileParseMultipleWithKey: function(test) {
         test.expect(10);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('RB.getString("This is a test", "x");\n\ta.parse("This is another test.");\n\t\tRB.getString("This is a test", "y");');
+        cf.parse('RB.getString("This is a test", "x");\n\ta.parse("This is another test.");\n\t\tRB.getString("This is a test", "y");');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBy({
@@ -409,16 +409,16 @@ module.exports.cfile = {
     testCFileParseMultipleSameLine: function(test) {
         test.expect(12);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('RB.getString("This is a test"), RB.getString("This is a second test"), RB.getString("This is a third test")');
+        cf.parse('RB.getString("This is a test"), RB.getString("This is a second test"), RB.getString("This is a third test")');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         test.equal(set.size(), 3);
@@ -444,16 +444,16 @@ module.exports.cfile = {
     testCFileParseMultipleWithComments: function(test) {
         test.expect(10);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('RB.getString("This is a test");   // i18n: foo\n\ta.parse("This is another test.");\n\t\tRB.getString("This is also a test");\t// i18n: bar');
+        cf.parse('RB.getString("This is a test");   // i18n: foo\n\ta.parse("This is another test.");\n\t\tRB.getString("This is also a test");\t// i18n: bar');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBySource("This is a test");
@@ -474,16 +474,16 @@ module.exports.cfile = {
     testCFileParseMultipleWithUniqueIdsAndComments: function(test) {
         test.expect(10);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('RB.getString("This is a test", "asdf");   // i18n: foo\n\ta.parse("This is another test.");\n\t\tRB.getString("This is also a test", "kdkdkd");\t// i18n: bar');
+        cf.parse('RB.getString("This is a test", "asdf");   // i18n: foo\n\ta.parse("This is another test.");\n\t\tRB.getString("This is also a test", "kdkdkd");\t// i18n: bar');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBy({
@@ -508,16 +508,16 @@ module.exports.cfile = {
     testCFileParseWithDups: function(test) {
         test.expect(6);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('RB.getString("This is a test");\n\ta.parse("This is another test.");\n\t\tRB.getString("This is a test");');
+        cf.parse('RB.getString("This is a test");\n\ta.parse("This is another test.");\n\t\tRB.getString("This is a test");');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBySource("This is a test");
@@ -533,16 +533,16 @@ module.exports.cfile = {
     testCFileParseDupsDifferingByKeyOnly: function(test) {
         test.expect(8);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('RB.getString("This is a test");\n\ta.parse("This is another test.");\n\t\tRB.getString("This is a test", "unique_id");');
+        cf.parse('RB.getString("This is a test");\n\ta.parse("This is another test.");\n\t\tRB.getString("This is a test", "unique_id");');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBySource("This is a test");
@@ -563,16 +563,16 @@ module.exports.cfile = {
     testCFileParseBogusConcatenation: function(test) {
         test.expect(2);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('RB.getString("This is a test" + " and this isnt");');
+        cf.parse('RB.getString("This is a test" + " and this isnt");');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
 
         test.equal(set.size(), 0);
 
@@ -582,16 +582,16 @@ module.exports.cfile = {
     testCFileParseBogusConcatenation2: function(test) {
         test.expect(2);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('RB.getString("This is a test" + foobar);');
+        cf.parse('RB.getString("This is a test" + foobar);');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.equal(set.size(), 0);
 
         test.done();
@@ -600,16 +600,16 @@ module.exports.cfile = {
     testCFileParseBogusNonStringParam: function(test) {
         test.expect(2);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('RB.getString(foobar);');
+        cf.parse('RB.getString(foobar);');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.equal(set.size(), 0);
 
         test.done();
@@ -618,16 +618,16 @@ module.exports.cfile = {
     testCFileParseEmptyParams: function(test) {
         test.expect(2);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('RB.getString();');
+        cf.parse('RB.getString();');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.equal(set.size(), 0);
 
         test.done();
@@ -636,16 +636,16 @@ module.exports.cfile = {
     testCFileParseWholeWord: function(test) {
         test.expect(2);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('EPIRB.getString("This is a test");');
+        cf.parse('EPIRB.getString("This is a test");');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.equal(set.size(), 0);
 
         test.done();
@@ -654,16 +654,16 @@ module.exports.cfile = {
     testCFileParseSubobject: function(test) {
         test.expect(2);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse('App.RB.getString("This is a test");');
+        cf.parse('App.RB.getString("This is a test");');
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.equal(set.size(), 1);
 
         test.done();
@@ -672,14 +672,14 @@ module.exports.cfile = {
     testCFileParsePunctuationBeforeRB: function(test) {
         test.expect(9);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse(
+        cf.parse(
             "        <%\n" +
             "        var listsOver4 = false;\n" +
             "        var seemoreLen = 0;\n" +
@@ -689,7 +689,7 @@ module.exports.cfile = {
             "            if (list.length > 0) {\n" +
             "        %>\n");
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         test.equal(set.size(), 2);
@@ -710,16 +710,16 @@ module.exports.cfile = {
     testCFileParseEmptyString: function(test) {
         test.expect(3);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
-        j.parse("var subcats = [RB.getStringJS(''), RB.getString(''), RB.getStringJS('', 'foo'), RB.getStringJS('foo', '')];\n");
+        cf.parse("var subcats = [RB.getStringJS(''), RB.getString(''), RB.getStringJS('', 'foo'), RB.getStringJS('foo', '')];\n");
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.ok(set);
 
         test.equal(set.size(), 0);
@@ -730,16 +730,16 @@ module.exports.cfile = {
     testCFileExtractFile: function(test) {
         test.expect(8);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: "./js/t1.js",
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
         // should read the file
-        j.extract();
-        var set = j.getTranslationSet();
+        cf.extract();
+        var set = cf.getTranslationSet();
         test.equal(set.size(), 4);
 
         var r = set.getBySource("This is a test");
@@ -760,34 +760,34 @@ module.exports.cfile = {
     testCFileExtractUndefinedFile: function(test) {
         test.expect(2);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: undefined,
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
         // should attempt to read the file and not fail
-        j.extract();
+        cf.extract();
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.equal(set.size(), 0);
         test.done();
     },
     testCFileTest2: function(test) {
         test.expect(2);
 
-        var j = new CFile({
+        var cf = new CFile({
             project: p,
             pathName: "./js/t2.c",
-            type: jsft
+            type: cft
         });
-        test.ok(j);
+        test.ok(cf);
 
         // should attempt to read the file and not fail
-        j.extract();
+        cf.extract();
 
-        var set = j.getTranslationSet();
+        var set = cf.getTranslationSet();
         test.equal(set.size(), 10);
         test.done();
     }
