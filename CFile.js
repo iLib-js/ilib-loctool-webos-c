@@ -104,10 +104,7 @@ CFile.prototype.makeKey = function(source) {
 };
 
 var reGetLocString = new RegExp(/\bresBundle_getLocString\((.*)\,\s*[\"|\'](.*)*[\"|\']\)\;/g);
-//var reGetLocString = new RegExp(/resBundle_getLocString\((.*)\,\s*[\"|\'](.*)*[\"|\']\)\;\s*\/\/\s*(.*)/g);
-
 var reGetLocStringWithKey = new RegExp(/\bresBundle_getLocStringWithKey\((.*)\,\s*[\"|\'](.*)[\"|\']\,\s*[\"|\'](.*)*[\"|\']\)/g);
-
 var reI18nComment = new RegExp("//\\s*i18n\\s*\\s*(.*)$");
 
 /**
@@ -194,11 +191,6 @@ CFile.prototype.parse = function(data) {
         }
         result = reGetLocStringWithKey.exec(data);
     }
-    /*console.log("!!!!!!!!");
-    for (var i=0; i < this.set.resources.length; i++) {
-        console.log(i + ":  ", this.set.resources[i].source);
-    }*/
-
 };
 
 /**
