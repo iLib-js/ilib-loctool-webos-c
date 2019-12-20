@@ -103,10 +103,12 @@ CFile.prototype.makeKey = function(source) {
     return CFile.unescapeString(source);
 };
 
-var reGetLocString = new RegExp(/resBundle_getLocString\((.*)\,\s*[\"|\'](.*)*[\"|\']\)/g);
-var reGetLocStringWithKey = new RegExp(/resBundle_getLocStringWithKey\((.*)\,\s*[\"|\'](.*)[\"|\']\,\s*[\"|\'](.*)*[\"|\']\)/g);
+var reGetLocString = new RegExp(/\bresBundle_getLocString\((.*)\,\s*[\"|\'](.*)*[\"|\']\)\;/g);
+//var reGetLocString = new RegExp(/resBundle_getLocString\((.*)\,\s*[\"|\'](.*)*[\"|\']\)\;\s*\/\/\s*(.*)/g);
 
-var reI18nComment = new RegExp("//\\s*i18n\\s*:\\s*(.*)$");
+var reGetLocStringWithKey = new RegExp(/\bresBundle_getLocStringWithKey\((.*)\,\s*[\"|\'](.*)[\"|\']\,\s*[\"|\'](.*)*[\"|\']\)/g);
+
+var reI18nComment = new RegExp("//\\s*i18n\\s*\\s*(.*)$");
 
 /**
  * Parse the data string looking for the localizable strings and add them to the

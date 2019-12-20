@@ -259,17 +259,17 @@ module.exports.cfile = {
         test.ok(set);
 
         var r = set.getBy({
-            reskey: "unique_id"
+            reskey: "PictureMode.Standard"
         });
         test.ok(r);
-        test.equal(r[0].getSource(), "Standard");
+        test.equal(r[0].getSource(), "PictureMode.Standard");
         test.equal(r[0].getKey(), "PictureMode.Standard");
 
         test.done();
     },
 
     testCFileParseWithKeyandComment: function(test) {
-        test.expect(5);
+        test.expect(6);
 
         var cf = new CFile({
             project: p,
@@ -287,7 +287,7 @@ module.exports.cfile = {
             reskey: "PictureMode.Standard"
         });
         test.ok(r);
-        test.equal(r[0].getSource(), "Standard");
+        test.equal(r[0].getSource(), "PictureMode.Standard");
         test.equal(r[0].getKey(), "PictureMode.Standard");
         test.equal(r[0].getComment(), "button");
 
@@ -310,10 +310,10 @@ module.exports.cfile = {
         test.ok(set);
 
         var r = set.getBy({
-            reskey: "Standard"
+            reskey: "PictureMode.Standard"
         });
         test.ok(r);
-        test.equal(r[0].getSource(), "Standard");
+        test.equal(r[0].getSource(), "PictureMode.Standard");
         test.equal(r[0].getKey(), "PictureMode.Standard");
 
         test.done();
@@ -335,10 +335,10 @@ module.exports.cfile = {
         test.ok(set);
 
         var r = set.getBy({
-            reskey: "Standard"
+            reskey: "PictureMode.Standard"
         });
         test.ok(r);
-        test.equal(r[0].getSource(), "Standard");
+        test.equal(r[0].getSource(), "PictureMode.Standard");
         test.equal(r[0].getKey(), "PictureMode.Standard");
 
         test.done();
@@ -354,20 +354,20 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('RB.getString("This is a test");\n\ta.parse("This is another test.");\n\t\tRB.getString("This is also a test");');
+        cf.parse('char *screen_share_60 = (char *)resBundle_getLocString(res_bundle, "Block");\n\ta.parse("This is another test.");\n\t\tchar *screen_share_67 = (char *)resBundle_getLocString(res_bundle, "Cancel");');
 
         var set = cf.getTranslationSet();
         test.ok(set);
 
-        var r = set.getBySource("This is a test");
+        var r = set.getBySource("Block");
         test.ok(r);
-        test.equal(r.getSource(), "This is a test");
-        test.equal(r.getKey(), "This is a test");
+        test.equal(r.getSource(), "Block");
+        test.equal(r.getKey(), "Block");
 
-        r = set.getBySource("This is also a test");
+        r = set.getBySource("Cancel");
         test.ok(r);
-        test.equal(r.getSource(), "This is also a test");
-        test.equal(r.getKey(), "This is also a test");
+        test.equal(r.getSource(), "Cancel");
+        test.equal(r.getKey(), "Cancel");
 
         test.done();
     },
@@ -382,26 +382,26 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('RB.getString("This is a test", "x");\n\ta.parse("This is another test.");\n\t\tRB.getString("This is a test", "y");');
+        cf.parse('char *screen_share_60 = (char *)resBundle_getLocStringWithKey(res_bundle, "Block.key", "Block");\n\ta.parse("This is another test.");\n\t\tchar *screen_share_67 = (char *)resBundle_getLocStringWithKey(res_bundle, "Cancel.key","Cancel");');
 
         var set = cf.getTranslationSet();
         test.ok(set);
 
         var r = set.getBy({
-            reskey: "x"
+            reskey: "Block.key"
         });
         test.ok(r);
-        test.equal(r[0].getSource(), "This is a test");
-        test.ok(!r[0].getAutoKey());
-        test.equal(r[0].getKey(), "x");
+        test.equal(r[0].getSource(), "Block.key");
+        test.ok(r[0].getAutoKey());
+        test.equal(r[0].getKey(), "Block.key");
 
         r = set.getBy({
-            reskey: "y"
+            reskey: "Cancel.key"
         });
         test.ok(r);
-        test.equal(r[0].getSource(), "This is a test");
-        test.ok(!r[0].getAutoKey());
-        test.equal(r[0].getKey(), "y");
+        test.equal(r[0].getSource(), "Cancel.key");
+        test.ok(r[0].getAutoKey());
+        test.equal(r[0].getKey(), "Cancel.key");
 
         test.done();
     },
@@ -416,27 +416,27 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('RB.getString("This is a test"), RB.getString("This is a second test"), RB.getString("This is a third test")');
+        cf.parse('char *screen_share_60 = (char *)resBundle_getLocStringWithKey(res_bundle, "Block.key", "Block");\n\ta.parse("This is another test.");\n\t\tchar *screen_share_67 = (char *)resBundle_getLocString(res_bundle, "Cancel"); \n\tchar *screen_share_70 = (char *)resBundle_getLocString(res_bundle, "Stop");');
 
         var set = cf.getTranslationSet();
         test.ok(set);
 
         test.equal(set.size(), 3);
 
-        var r = set.getBySource("This is a test");
+        var r = set.getBySource("Block.key");
         test.ok(r);
-        test.equal(r.getSource(), "This is a test");
-        test.equal(r.getKey(), "This is a test");
+        test.equal(r.getSource(), "Block.key");
+        test.equal(r.getKey(), "Block.key");
 
-        r = set.getBySource("This is a second test");
+        r = set.getBySource("Cancel");
         test.ok(r);
-        test.equal(r.getSource(), "This is a second test");
-        test.equal(r.getKey(), "This is a second test");
+        test.equal(r.getSource(), "Cancel");
+        test.equal(r.getKey(), "Cancel");
 
-        r = set.getBySource("This is a third test");
+        r = set.getBySource("Stop");
         test.ok(r);
-        test.equal(r.getSource(), "This is a third test");
-        test.equal(r.getKey(), "This is a third test");
+        test.equal(r.getSource(), "Stop");
+        test.equal(r.getKey(), "Stop");
 
         test.done();
     },
@@ -451,56 +451,21 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('RB.getString("This is a test");   // i18n: foo\n\ta.parse("This is another test.");\n\t\tRB.getString("This is also a test");\t// i18n: bar');
-
+        cf.parse('char *screen_share_60 = (char *)resBundle_getLocString(res_bundle, "Block");// i18n foo\n\ta.parse("This is another test.");\n\t\tchar *screen_share_67 = (char *)resBundle_getLocString(res_bundle, "Cancel");  // i18n bar');
         var set = cf.getTranslationSet();
         test.ok(set);
 
-        var r = set.getBySource("This is a test");
+        var r = set.getBySource("Block");
         test.ok(r);
-        test.equal(r.getSource(), "This is a test");
-        test.equal(r.getKey(), "This is a test");
+        test.equal(r.getSource(), "Block");
+        test.equal(r.getKey(), "Block");
         test.equal(r.getComment(), "foo");
 
-        r = set.getBySource("This is also a test");
+        r = set.getBySource("Cancel");
         test.ok(r);
-        test.equal(r.getSource(), "This is also a test");
-        test.equal(r.getKey(), "This is also a test");
+        test.equal(r.getSource(), "Cancel");
+        test.equal(r.getKey(), "Cancel");
         test.equal(r.getComment(), "bar");
-
-        test.done();
-    },
-
-    testCFileParseMultipleWithUniqueIdsAndComments: function(test) {
-        test.expect(10);
-
-        var cf = new CFile({
-            project: p,
-            pathName: undefined,
-            type: cft
-        });
-        test.ok(cf);
-
-        cf.parse('RB.getString("This is a test", "asdf");   // i18n: foo\n\ta.parse("This is another test.");\n\t\tRB.getString("This is also a test", "kdkdkd");\t// i18n: bar');
-
-        var set = cf.getTranslationSet();
-        test.ok(set);
-
-        var r = set.getBy({
-            reskey: "asdf"
-        });
-        test.ok(r);
-        test.equal(r[0].getSource(), "This is a test");
-        test.equal(r[0].getKey(), "asdf");
-        test.equal(r[0].getComment(), "foo");
-
-        r = set.getBy({
-            reskey: "kdkdkd"
-        });
-        test.ok(r);
-        test.equal(r[0].getSource(), "This is also a test");
-        test.equal(r[0].getKey(), "kdkdkd");
-        test.equal(r[0].getComment(), "bar");
 
         test.done();
     },
@@ -515,84 +480,16 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('RB.getString("This is a test");\n\ta.parse("This is another test.");\n\t\tRB.getString("This is a test");');
-
+        cf.parse('char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK");\n\tchar* notifi_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK");');
         var set = cf.getTranslationSet();
         test.ok(set);
 
-        var r = set.getBySource("This is a test");
+        var r = set.getBySource("OK");
         test.ok(r);
-        test.equal(r.getSource(), "This is a test");
-        test.equal(r.getKey(), "This is a test");
+        test.equal(r.getSource(), "OK");
+        test.equal(r.getKey(), "OK");
 
         test.equal(set.size(), 1);
-
-        test.done();
-    },
-
-    testCFileParseDupsDifferingByKeyOnly: function(test) {
-        test.expect(8);
-
-        var cf = new CFile({
-            project: p,
-            pathName: undefined,
-            type: cft
-        });
-        test.ok(cf);
-
-        cf.parse('RB.getString("This is a test");\n\ta.parse("This is another test.");\n\t\tRB.getString("This is a test", "unique_id");');
-
-        var set = cf.getTranslationSet();
-        test.ok(set);
-
-        var r = set.getBySource("This is a test");
-        test.ok(r);
-        test.equal(r.getSource(), "This is a test");
-        test.equal(r.getKey(), "This is a test");
-
-        r = set.getBy({
-            reskey: "unique_id"
-        });
-        test.ok(r);
-        test.equal(r[0].getSource(), "This is a test");
-        test.equal(r[0].getKey(), "unique_id");
-
-        test.done();
-    },
-
-    testCFileParseBogusConcatenation: function(test) {
-        test.expect(2);
-
-        var cf = new CFile({
-            project: p,
-            pathName: undefined,
-            type: cft
-        });
-        test.ok(cf);
-
-        cf.parse('RB.getString("This is a test" + " and this isnt");');
-
-        var set = cf.getTranslationSet();
-
-        test.equal(set.size(), 0);
-
-        test.done();
-    },
-
-    testCFileParseBogusConcatenation2: function(test) {
-        test.expect(2);
-
-        var cf = new CFile({
-            project: p,
-            pathName: undefined,
-            type: cft
-        });
-        test.ok(cf);
-
-        cf.parse('RB.getString("This is a test" + foobar);');
-
-        var set = cf.getTranslationSet();
-        test.equal(set.size(), 0);
 
         test.done();
     },
@@ -607,7 +504,7 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('RB.getString(foobar);');
+        cf.parse('char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), foobar);');
 
         var set = cf.getTranslationSet();
         test.equal(set.size(), 0);
@@ -625,7 +522,7 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('RB.getString();');
+        cf.parse('char* alert_btn= (char *)resBundle_getLocString();');
 
         var set = cf.getTranslationSet();
         test.equal(set.size(), 0);
@@ -643,34 +540,16 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('EPIRB.getString("This is a test");');
+        cf.parse('char* alert_btn= (char *)rresBundle_getLocString(notification_getResBundle(), "OK");');
 
         var set = cf.getTranslationSet();
         test.equal(set.size(), 0);
-
-        test.done();
-    },
-
-    testCFileParseSubobject: function(test) {
-        test.expect(2);
-
-        var cf = new CFile({
-            project: p,
-            pathName: undefined,
-            type: cft
-        });
-        test.ok(cf);
-
-        cf.parse('App.RB.getString("This is a test");');
-
-        var set = cf.getTranslationSet();
-        test.equal(set.size(), 1);
 
         test.done();
     },
 
     testCFileParsePunctuationBeforeRB: function(test) {
-        test.expect(9);
+        test.expect(12);
 
         var cf = new CFile({
             project: p,
@@ -678,51 +557,38 @@ module.exports.cfile = {
             type: cft
         });
         test.ok(cf);
-
-        cf.parse(
-            "        <%\n" +
-            "        var listsOver4 = false;\n" +
-            "        var seemoreLen = 0;\n" +
-            "        var subcats = [RB.getStringJS('Personal'), RB.getStringJS('Smart Watches')];\n" +
-            "        _.each(subcats, function(subcat, j){\n" +
-            "            var list = topic.attribute.kb_attribute_relationships[subcat] || [];\n" +
-            "            if (list.length > 0) {\n" +
-            "        %>\n");
-
-        var set = cf.getTranslationSet();
-        test.ok(set);
-
-        test.equal(set.size(), 2);
-
-        var r = set.getBySource("Personal");
-        test.ok(r);
-        test.equal(r.getSource(), "Personal");
-        test.equal(r.getKey(), "Personal");
-
-        r = set.getBySource("Smart Watches");
-        test.ok(r);
-        test.equal(r.getSource(), "Smart Watches");
-        test.equal(r.getKey(), "Smart Watches");
-
-        test.done();
-    },
-
-    testCFileParseEmptyString: function(test) {
-        test.expect(3);
-
-        var cf = new CFile({
-            project: p,
-            pathName: undefined,
-            type: cft
-        });
-        test.ok(cf);
-
-        cf.parse("var subcats = [RB.getStringJS(''), RB.getString(''), RB.getStringJS('', 'foo'), RB.getStringJS('foo', '')];\n");
+        cf.parse("        \n"+
+            "    bool ret = FALSE;\n" +
+            "    struct json_object *jobj=NULL, *subjobj=NULL, *btnjobj=NULL, *pramjobj=NULL, *aryjobj=NULL, *closejobj=NULL;\n" +
+            "    char msg[1024]={0,};\n" +
+            "\n" +
+            "    char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), 'OK');\n" +
+            "    char* alert_msg_line1= (char *)resBundle_getLocString(notification_getResBundle(), 'The device cannot be connected to your TV.');\n" +
+            "    char* alert_msg_line2= (char *)resBundle_getLocString(notification_getResBundle(), 'Please try again. If the issue persists, please restart your TV or check your device.');\n" +
+            "\n" +
+            "    jobj = json_object_new_object();\n" +
+            "    aryjobj=json_object_new_array();\n" +
+            "\n");
 
         var set = cf.getTranslationSet();
         test.ok(set);
 
-        test.equal(set.size(), 0);
+        test.equal(set.size(), 3);
+
+        var r = set.getBySource("OK");
+        test.ok(r);
+        test.equal(r.getSource(), "OK");
+        test.equal(r.getKey(), "OK");
+
+        r = set.getBySource("The device cannot be connected to your TV.");
+        test.ok(r);
+        test.equal(r.getSource(), "The device cannot be connected to your TV.");
+        test.equal(r.getKey(), "The device cannot be connected to your TV.");
+
+        r = set.getBySource("Please try again. If the issue persists, please restart your TV or check your device.");
+        test.ok(r);
+        test.equal(r.getSource(), "Please try again. If the issue persists, please restart your TV or check your device.");
+        test.equal(r.getKey(), "Please try again. If the issue persists, please restart your TV or check your device.");
 
         test.done();
     },
@@ -732,7 +598,7 @@ module.exports.cfile = {
 
         var cf = new CFile({
             project: p,
-            pathName: "./js/t1.js",
+            pathName: "./t1.c",
             type: cft
         });
         test.ok(cf);
@@ -740,19 +606,19 @@ module.exports.cfile = {
         // should read the file
         cf.extract();
         var set = cf.getTranslationSet();
-        test.equal(set.size(), 4);
+        test.equal(set.size(), 29);
 
-        var r = set.getBySource("This is a test");
+        var r = set.getBySource("Decline");
         test.ok(r);
-        test.equal(r.getSource(), "This is a test");
-        test.equal(r.getKey(), "This is a test");
+        test.equal(r.getSource(), "Decline");
+        test.equal(r.getKey(), "Decline");
 
         var r = set.getBy({
-            reskey: "id1"
+            reskey: "Do you want to accept this request?"
         });
         test.ok(r);
-        test.equal(r[0].getSource(), "This is a test with a unique id");
-        test.equal(r[0].getKey(), "id1");
+        test.equal(r[0].getSource(), "Do you want to accept this request?");
+        test.equal(r[0].getKey(), "Do you want to accept this request?");
 
         test.done();
     },
@@ -779,7 +645,7 @@ module.exports.cfile = {
 
         var cf = new CFile({
             project: p,
-            pathName: "./js/t2.c",
+            pathName: "./t2.c",
             type: cft
         });
         test.ok(cf);
@@ -788,7 +654,7 @@ module.exports.cfile = {
         cf.extract();
 
         var set = cf.getTranslationSet();
-        test.equal(set.size(), 10);
+        test.equal(set.size(), 0);
         test.done();
     }
 };
