@@ -3,6 +3,7 @@
 
 ## Release Notes
 v1.0.0
+* Implemented to parse properly regarding resource bundle usage of C files.
 
 ## License
 
