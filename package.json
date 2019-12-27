@@ -15,9 +15,7 @@
         "resources",
         "locale",
         "translation",
-        "webpack",
-        "loader",
-        "javascript"
+        "c"
     ],
     "author": {
         "name": "Goun Lee",
@@ -54,7 +52,7 @@
         "log4js": "^5.0.0"
     },
     "devDependencies": {
-        "loctool": "^2.2.0",
+        "loctool": "^2.4.0",
         "nodeunit": "^0.11.3"
     }
 }

@@ -42,57 +42,7 @@ var CFile = function(props) {
 };
 
 /**
- * Unescape the string to make the same string that would be
- * in memory in the target programming language.
- *
- * @static
- * @param {String} string the string to unescape
- * @returns {String} the unescaped string
- */
-CFile.unescapeString = function(string) {
-    var unescaped = string;
-
-    unescaped = unescaped.
-        replace(/\\\\n/g, "").                // line continuation
-        replace(/\\\n/g, "").                // line continuation
-        replace(/^\\\\/, "\\").             // unescape backslashes
-        replace(/([^\\])\\\\/g, "$1\\").
-        replace(/^\\'/, "'").               // unescape quotes
-        replace(/([^\\])\\'/g, "$1'").
-        replace(/^\\"/, '"').
-        replace(/([^\\])\\"/g, '$1"');
-
-    return unescaped;
-};
-
-/**
- * Clean the string to make a resource name string. This means
- * removing leading and trailing white space, compressing
- * whitespaces, and unescaping characters. This changes
- * the string from what it looks like in the source
- * code but increases matching.
- *
- * @static
- * @param {String} string the string to clean
- * @returns {String} the cleaned string
- */
-CFile.cleanString = function(string) {
-    var unescaped = CFile.unescapeString(string);
-
-    unescaped = unescaped.
-        replace(/\\[btnfr]/g, " ").
-        replace(/[ \n\t\r\f]+/g, " ").
-        trim();
-
-    return unescaped;
-};
-
-/**
- * Make a new key for the given string. This must correspond
- * exactly with the code in htglob jar file so that the
- * resources match up. See the class IResourceBundle in
- * this project under the java directory for the corresponding
- * code.
+ * Use a key for the given string as it is. Not manipulating at all.
  *
  * @private
  * @param {String} source the source string to make a resource
@@ -100,11 +50,11 @@ CFile.cleanString = function(string) {
  * @returns {String} a unique key for this string
  */
 CFile.prototype.makeKey = function(source) {
-    return CFile.unescapeString(source);
+    return source;
 };
 
-var reGetLocString = new RegExp(/\bresBundle_getLocString\((.*)\,\s*[\"|\'](.*)*[\"|\']\)\;/g);
-var reGetLocStringWithKey = new RegExp(/\bresBundle_getLocStringWithKey\((.*)\,\s*[\"|\'](.*)[\"|\']\,\s*[\"|\'](.*)*[\"|\']\)/g);
+var reGetLocString = new RegExp(/\bresBundle_getLocString\((.*)\,\s*[\"](.*)*[\"]\)\;/g);
+var reGetLocStringWithKey = new RegExp(/\bresBundle_getLocStringWithKey\((.*)\,\s*[\"](.*)[\"]\,\s*[\"](.*)*[\"]\)/g);
 var reI18nComment = new RegExp("//\\s*i18n\\s*\\s*(.*)$");
 
 /**
@@ -122,7 +72,6 @@ CFile.prototype.parse = function(data) {
     reGetLocString.lastIndex = 0; // just to be safe
     var result = reGetLocString.exec(data);
     while (result && result.length > 1 && result[2]) {
-        // different matches for single and double quotes
         match = result[2];
 
         if (match && match.length) {
@@ -137,9 +86,9 @@ CFile.prototype.parse = function(data) {
             var r = this.API.newResource({
                 resType: "string",
                 project: this.project.getProjectId(),
-                key: CFile.unescapeString(match),
+                key: match,
                 sourceLocale: this.project.sourceLocale,
-                source: CFile.cleanString(match),
+                source: match,
                 autoKey: true,
                 pathName: this.pathName,
                 state: "new",
@@ -159,8 +108,8 @@ CFile.prototype.parse = function(data) {
     reGetLocStringWithKey.lastIndex = 0; // just to be safe
     var result = reGetLocStringWithKey.exec(data);
     while (result && result.length > 1 && result[2]) {
-        // different matches for single and double quotes
-        match = result[2];
+        match = result[3];
+        key = result[2];
 
         if (match && match.length) {
             logger.trace("Found string key: " + this.makeKey(match) + ", string: '" + match + "'");
@@ -174,9 +123,9 @@ CFile.prototype.parse = function(data) {
             var r = this.API.newResource({
                 resType: "string",
                 project: this.project.getProjectId(),
-                key: CFile.unescapeString(match),
+                key: key,
                 sourceLocale: this.project.sourceLocale,
-                source: CFile.cleanString(match),
+                source: match,
                 autoKey: true,
                 pathName: this.pathName,
                 state: "new",

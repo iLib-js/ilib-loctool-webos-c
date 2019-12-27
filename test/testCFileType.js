@@ -78,7 +78,7 @@ module.exports.cfiletype = {
 
         var cft = new CFileType(p);
         test.ok(cft);
-        test.ok(!cft.handles("foojs"));
+        test.ok(!cft.handles("fooc"));
         test.done();
     }
 };

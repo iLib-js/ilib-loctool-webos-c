@@ -80,6 +80,32 @@ module.exports.cfile = {
         test.done();
     },
 
+    testCFileMakeKeyWithSpace: function(test) {
+        test.expect(2);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+        test.equal(cf.makeKey(" This is a test "), " This is a test ");
+        test.done();
+    },
+
+    testCFileMakeKeyWithSpaces: function(test) {
+        test.expect(2);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+        test.equal(cf.makeKey("   This is a test   "), "   This is a test   ");
+        test.done();
+    },
+
     testCFileParseSimpleGetByKey: function(test) {
         test.expect(5);
 
@@ -128,8 +154,8 @@ module.exports.cfile = {
 
         test.done();
     },
-    
-    testCFileParseSimpleSingleQuotes: function(test) {
+
+    testCFileParseSimpleGetBySourceWithSpace: function(test) {
         test.expect(5);
 
         var cf = new CFile({
@@ -138,21 +164,21 @@ module.exports.cfile = {
             type: cft
         });
         test.ok(cf);
-        
-        cf.parse("resBundle_getLocString(res_bundle, 'OK');");
+
+        cf.parse('resBundle_getLocString(res_bundle, " OK ");');
 
         var set = cf.getTranslationSet();
         test.ok(set);
 
-        var r = set.getBySource("OK");
+        var r = set.getBySource(" OK ");
         test.ok(r);
-        test.equal(r.getSource(), "OK");
-        test.equal(r.getKey(), "OK");
+        test.equal(r.getSource(), " OK ");
+        test.equal(r.getKey(), " OK ");
 
         test.done();
     },
 
-    testCFileParseJSSimpleSingleQuotes: function(test) {
+    testCFileParseSimpleGetBySourceWithSpaces: function(test) {
         test.expect(5);
 
         var cf = new CFile({
@@ -161,8 +187,31 @@ module.exports.cfile = {
             type: cft
         });
         test.ok(cf);
-        
-        cf.parse("char *screen_share_58 = (char *)resBundle_getLocString(res_bundle, 'This is a test');");
+
+        cf.parse('resBundle_getLocString(res_bundle, "     OK   ");');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
+
+        var r = set.getBySource("     OK   ");
+        test.ok(r);
+        test.equal(r.getSource(), "     OK   ");
+        test.equal(r.getKey(), "     OK   ");
+
+        test.done();
+    },
+
+    testCFileParseJSSimple: function(test) {
+        test.expect(5);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse('char *screen_share_58 = (char *)resBundle_getLocString(res_bundle, "This is a test");');
 
         var set = cf.getTranslationSet();
         test.ok(set);
@@ -175,7 +224,30 @@ module.exports.cfile = {
         test.done();
     },
 
-    testCFileParseMoreComplexSingleQuotes: function(test) {
+    testCFileParseJSSimple2: function(test) {
+        test.expect(5);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse('localized_string = (gchar*)resBundle_getLocString(_g_res_bundle_object, "Please say \"Stop\" when you see the desired channel.");');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
+
+        var r = set.getBySource("Please say \"Stop\" when you see the desired channel.");
+        test.ok(r);
+        test.equal(r.getSource(), "Please say \"Stop\" when you see the desired channel.");
+        test.equal(r.getKey(), "Please say \"Stop\" when you see the desired channel.");
+
+        test.done();
+    },
+
+    testCFileParseMoreComplex: function(test) {
         test.expect(5);
 
         var cf = new CFile({
@@ -194,28 +266,6 @@ module.exports.cfile = {
         test.ok(r);
         test.equal(r.getSource(), "[PIN CODE : %s]<br> Enter this PIN code in your %s within 120 seconds.");
         test.equal(r.getKey(), "[PIN CODE : %s]<br> Enter this PIN code in your %s within 120 seconds.");
-
-        test.done();
-    },
-    
-    testCFileParseSimpleRightSize: function(test) {
-        test.expect(4);
-
-        var cf = new CFile({
-            project: p,
-            pathName: undefined,
-            type: cft
-        });
-        test.ok(cf);
-
-        var set = cf.getTranslationSet();
-        test.equal(set.size(), 0);
-
-        cf.parse("char *screen_share_58 = (char *)resBundle_getLocString(res_bundle, 'This is a test');");
-
-        test.ok(set);
-
-        test.equal(set.size(), 1);
 
         test.done();
     },
@@ -262,7 +312,32 @@ module.exports.cfile = {
             reskey: "PictureMode.Standard"
         });
         test.ok(r);
-        test.equal(r[0].getSource(), "PictureMode.Standard");
+        test.equal(r[0].getSource(), "Standard");
+        test.equal(r[0].getKey(), "PictureMode.Standard");
+
+        test.done();
+    },
+
+    testCFileParseWithKey2: function(test) {
+        test.expect(5);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse('const char* pPicture = resBundle_getLocStringWithKey(resBundle, "PictureMode.Standard", "Standard");');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
+
+        var r = set.getBy({
+            reskey: "PictureMode.Standard"
+        });
+        test.ok(r);
+        test.equal(r[0].getSource(), "Standard");
         test.equal(r[0].getKey(), "PictureMode.Standard");
 
         test.done();
@@ -287,62 +362,13 @@ module.exports.cfile = {
             reskey: "PictureMode.Standard"
         });
         test.ok(r);
-        test.equal(r[0].getSource(), "PictureMode.Standard");
+        test.equal(r[0].getSource(), "Standard");
         test.equal(r[0].getKey(), "PictureMode.Standard");
         test.equal(r[0].getComment(), "button");
 
         test.done();
     },
 
-    testCFileParseWithKeySingleQuotes: function(test) {
-        test.expect(5);
-
-        var cf = new CFile({
-            project: p,
-            pathName: undefined,
-            type: cft
-        });
-        test.ok(cf);
-
-        cf.parse("const char* pPicture = resBundle_getLocStringWithKey(resBundle,'PictureMode.Standard', 'Standard');");
-
-        var set = cf.getTranslationSet();
-        test.ok(set);
-
-        var r = set.getBy({
-            reskey: "PictureMode.Standard"
-        });
-        test.ok(r);
-        test.equal(r[0].getSource(), "PictureMode.Standard");
-        test.equal(r[0].getKey(), "PictureMode.Standard");
-
-        test.done();
-    },
-
-    testCFileParseJSWithKeySingleQuotes: function(test) {
-        test.expect(5);
-
-        var cf = new CFile({
-            project: p,
-            pathName: undefined,
-            type: cft
-        });
-        test.ok(cf);
-
-        cf.parse("const char* pPicture = resBundle_getLocStringWithKey(resBundle,'PictureMode.Standard', 'Standard');");
-
-        var set = cf.getTranslationSet();
-        test.ok(set);
-
-        var r = set.getBy({
-            reskey: "PictureMode.Standard"
-        });
-        test.ok(r);
-        test.equal(r[0].getSource(), "PictureMode.Standard");
-        test.equal(r[0].getKey(), "PictureMode.Standard");
-
-        test.done();
-    },
 
     testCFileParseMultiple: function(test) {
         test.expect(8);
@@ -391,7 +417,7 @@ module.exports.cfile = {
             reskey: "Block.key"
         });
         test.ok(r);
-        test.equal(r[0].getSource(), "Block.key");
+        test.equal(r[0].getSource(), "Block");
         test.ok(r[0].getAutoKey());
         test.equal(r[0].getKey(), "Block.key");
 
@@ -399,7 +425,7 @@ module.exports.cfile = {
             reskey: "Cancel.key"
         });
         test.ok(r);
-        test.equal(r[0].getSource(), "Cancel.key");
+        test.equal(r[0].getSource(), "Cancel");
         test.ok(r[0].getAutoKey());
         test.equal(r[0].getKey(), "Cancel.key");
 
@@ -423,9 +449,9 @@ module.exports.cfile = {
 
         test.equal(set.size(), 3);
 
-        var r = set.getBySource("Block.key");
+        var r = set.getBySource("Block");
         test.ok(r);
-        test.equal(r.getSource(), "Block.key");
+        test.equal(r.getSource(), "Block");
         test.equal(r.getKey(), "Block.key");
 
         r = set.getBySource("Cancel");
@@ -557,18 +583,18 @@ module.exports.cfile = {
             type: cft
         });
         test.ok(cf);
-        cf.parse("        \n"+
-            "    bool ret = FALSE;\n" +
-            "    struct json_object *jobj=NULL, *subjobj=NULL, *btnjobj=NULL, *pramjobj=NULL, *aryjobj=NULL, *closejobj=NULL;\n" +
-            "    char msg[1024]={0,};\n" +
-            "\n" +
-            "    char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), 'OK');\n" +
-            "    char* alert_msg_line1= (char *)resBundle_getLocString(notification_getResBundle(), 'The device cannot be connected to your TV.');\n" +
-            "    char* alert_msg_line2= (char *)resBundle_getLocString(notification_getResBundle(), 'Please try again. If the issue persists, please restart your TV or check your device.');\n" +
-            "\n" +
-            "    jobj = json_object_new_object();\n" +
-            "    aryjobj=json_object_new_array();\n" +
-            "\n");
+        cf.parse('        \n'+
+            '    bool ret = FALSE;\n' +
+            '    struct json_object *jobj=NULL, *subjobj=NULL, *btnjobj=NULL, *pramjobj=NULL, *aryjobj=NULL, *closejobj=NULL;\n' +
+            '    char msg[1024]={0,};\n' +
+            '\n' +
+            '    char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK");\n' +
+            '    char* alert_msg_line1= (char *)resBundle_getLocString(notification_getResBundle(), "The device cannot be connected to your TV.");\n' +
+            '    char* alert_msg_line2= (char *)resBundle_getLocString(notification_getResBundle(), "Please try again. If the issue persists, please restart your TV or check your device.");\n' +
+            '\n' +
+            '    jobj = json_object_new_object();\n' +
+            '    aryjobj=json_object_new_array();\n' +
+            '\n');
 
         var set = cf.getTranslationSet();
         test.ok(set);
