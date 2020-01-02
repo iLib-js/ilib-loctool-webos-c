@@ -886,7 +886,7 @@ module.exports.cfile = {
         test.done();
     },
     testCFileTest2: function(test) {
-        test.expect(2);
+        test.expect(5);
 
         var cf = new CFile({
             project: p,
@@ -895,11 +895,32 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
+        cf.extract();
+        var set = cf.getTranslationSet();
+        test.equal(set.size(), 1);
+
+        var r = set.getBySource("Please say \"Stop\" when you see the desired channel.");
+        test.ok(r);
+        test.equal(r.getSource(), "Please say \"Stop\" when you see the desired channel.");
+        test.equal(r.getKey(), "Please say \"Stop\" when you see the desired channel.");
+
+        test.done();
+    },
+    testCFileTest3: function(test) {
+        test.expect(2);
+
+        var cf = new CFile({
+            project: p,
+            pathName: "./t3.c",
+            type: cft
+        });
+        test.ok(cf);
         // should attempt to read the file and not fail
         cf.extract();
 
         var set = cf.getTranslationSet();
         test.equal(set.size(), 0);
+
         test.done();
     }
 };

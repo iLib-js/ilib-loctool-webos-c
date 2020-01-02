@@ -67,7 +67,7 @@ void localization(void) {
 	char *screen_share_5_1 = (char *)resBundle_getLocString(res_bundle, "The device cannot be connected to your TV.");
 	char *screen_share_5_2 = (char *)resBundle_getLocString(res_bundle, "Please try again. If the issue persists, please restart your TV or check your device.");
 	char *screen_share_8 = (char *)resBundle_getLocString(res_bundle, "[PIN CODE : %s]<br> Enter this PIN code in your %s within 120 seconds.");
-	char *screen_share_19 = (char *)resBundle_getLocString(res_bundle, "The time for entering your PIN code has expired. Please try again.");
+	char *screen_share_19 = (char *)resBundle_getLocString(res_bundle, "The time for entering your \"PIN code\" has expired. Please try again.");
 	char *screen_share_21 = (char *)resBundle_getLocString(res_bundle, "If you accept this request, the current connection with another device will be disconnected.");
 	char *screen_share_22 = (char *)resBundle_getLocString(res_bundle, "Do you want to continue?");
 	char *screen_share_33 = (char *)resBundle_getLocString(res_bundle, "All devices connected via Wi-Fi Direct have been disconnected from TV.");
@@ -76,7 +76,7 @@ void localization(void) {
 	char *screen_share_36 = (char *)resBundle_getLocString(res_bundle, "%s requests screen sharing via Wi-Fi Direct.");
 	char *screen_share_37 = (char *)resBundle_getLocString(res_bundle, "Please try again after closing the Screen Share app.");
 	char *screen_share_40 = (char *)resBundle_getLocString(res_bundle, "Overlay Mode is not available during recording or Live Playback.");
-	char *screen_share_41 = (char *)resBundle_getLocString(res_bundle, "Overlay Mode will be off now to start recording or Live Playback.");
+	char *screen_share_41 = (char *)resBundle_getLocString(res_bundle, "\"Overlay Mode\" will be off now to start recording or Live Playback.");
 	char *screen_share_42 = (char *)resBundle_getLocString(res_bundle, "Overlay Mode is not available in {name}.");
 	char *screen_share_43 = (char *)resBundle_getLocString(res_bundle, "Overlay Mode is not available now.");
 	char *screen_share_54 = (char *)resBundle_getLocString(res_bundle, "%s requests screen sharing to your TV.");
