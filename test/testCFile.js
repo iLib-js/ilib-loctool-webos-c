@@ -239,10 +239,34 @@ module.exports.cfile = {
         var set = cf.getTranslationSet();
         test.ok(set);
 
-        var r = set.getBySource("Please say \"Stop\" when you see the desired channel.");
+        var r = set.getBySource('Please say \"Stop\" when you see the desired channel.');
         test.ok(r);
-        test.equal(r.getSource(), "Please say \"Stop\" when you see the desired channel.");
-        test.equal(r.getKey(), "Please say \"Stop\" when you see the desired channel.");
+        test.equal(r.getSource(), 'Please say \"Stop\" when you see the desired channel.');
+        test.equal(r.getKey(), 'Please say \"Stop\" when you see the desired channel.');
+
+        test.done();
+    },
+
+    testCFileParseJSSimple3: function(test) {
+        test.expect(6);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse('localized_string = (gchar*)resBundle_getLocString(_g_res_bundle_object, "Please say \"Stop\" when you see the desired channel.");  // i18n Detail description');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
+
+        var r = set.getBySource('Please say \"Stop\" when you see the desired channel.');
+        test.ok(r);
+        test.equal(r.getSource(), 'Please say \"Stop\" when you see the desired channel.');
+        test.equal(r.getKey(), 'Please say \"Stop\" when you see the desired channel.');
+        test.equal(r.getComment(), "Detail description");
 
         test.done();
     },
@@ -294,6 +318,126 @@ module.exports.cfile = {
         test.done();
     },
 
+    testCFileParseSimpleWithTranslatorComment2: function(test) {
+        test.expect(6);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse('char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); // i18n OK button for Bluray player');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
+
+        var r = set.getBySource("OK");
+        test.ok(r);
+        test.equal(r.getSource(), "OK");
+        test.equal(r.getKey(), "OK");
+        test.equal(r.getComment(), "OK button for Bluray player");
+
+        test.done();
+    },
+
+    testCFileParseSimpleWithTranslatorComment3: function(test) {
+        test.expect(6);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse('char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); /* i18n button */');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
+
+        var r = set.getBySource("OK");
+        test.ok(r);
+        test.equal(r.getSource(), "OK");
+        test.equal(r.getKey(), "OK");
+        test.equal(r.getComment(), "button");
+
+        test.done();
+    },
+
+    testCFileParseSimpleWithTranslatorComment4: function(test) {
+        test.expect(6);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse('char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); // i18n : Power button');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
+
+        var r = set.getBySource("OK");
+        test.ok(r);
+        test.equal(r.getSource(), "OK");
+        test.equal(r.getKey(), "OK");
+        test.equal(r.getComment(), "Power button");
+
+        test.done();
+    },
+
+    testCFileParseSimpleWithTranslatorComment5: function(test) {
+        test.expect(6);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse('char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); // i18n  /** Connect WiSA Dongle **/ ');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
+
+        var r = set.getBySource("OK");
+        test.ok(r);
+        test.equal(r.getSource(), "OK");
+        test.equal(r.getKey(), "OK");
+        test.equal(r.getComment(), "Connect WiSA Dongle");
+
+        test.done();
+    },
+
+    testCFileParseSimpleWithTranslatorComment6: function(test) {
+        test.expect(6);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse('char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); // i18n : GUIDE button for Set-top box, used in screen remote');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
+
+        var r = set.getBySource("OK");
+        test.ok(r);
+        test.equal(r.getSource(), "OK");
+        test.equal(r.getKey(), "OK");
+        test.equal(r.getComment(), "GUIDE button for Set-top box, used in screen remote");
+
+        test.done();
+    },
+
     testCFileParseWithKey: function(test) {
         test.expect(5);
 
@@ -304,7 +448,7 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('const char* pPicture = resBundle_getLocStringWithKey(resBundle,"PictureMode.Standard", "Standard");');
+        cf.parse('const char* pPicture = resBundle_getLocStringWithKey(resBundle, "PictureMode.Standard", "Standard");');
         var set = cf.getTranslationSet();
         test.ok(set);
 
@@ -319,7 +463,7 @@ module.exports.cfile = {
     },
 
     testCFileParseWithKey2: function(test) {
-        test.expect(5);
+        test.expect(8);
 
         var cf = new CFile({
             project: p,
@@ -328,7 +472,7 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('const char* pPicture = resBundle_getLocStringWithKey(resBundle, "PictureMode.Standard", "Standard");');
+        cf.parse('const char* pPicture = resBundle_getLocStringWithKey(resBundle, "PictureMode.Standard", "Standard");const char* pPicture = resBundle_getLocStringWithKey(resBundle, "PictureMode.Block", "Block");');
 
         var set = cf.getTranslationSet();
         test.ok(set);
@@ -339,6 +483,13 @@ module.exports.cfile = {
         test.ok(r);
         test.equal(r[0].getSource(), "Standard");
         test.equal(r[0].getKey(), "PictureMode.Standard");
+
+        var r = set.getBy({
+            reskey: "PictureMode.Block"
+        });
+        test.ok(r);
+        test.equal(r[0].getSource(), "Block");
+        test.equal(r[0].getKey(), "PictureMode.Block");
 
         test.done();
     },
@@ -369,7 +520,6 @@ module.exports.cfile = {
         test.done();
     },
 
-
     testCFileParseMultiple: function(test) {
         test.expect(8);
 
@@ -380,7 +530,7 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('char *screen_share_60 = (char *)resBundle_getLocString(res_bundle, "Block");\n\ta.parse("This is another test.");\n\t\tchar *screen_share_67 = (char *)resBundle_getLocString(res_bundle, "Cancel");');
+        cf.parse('char *screen_share_60 = (char *)resBundle_getLocString(res_bundle, "Block"); char *screen_share_67 = (char *)resBundle_getLocString(res_bundle, "Cancel");');
 
         var set = cf.getTranslationSet();
         test.ok(set);
@@ -398,7 +548,76 @@ module.exports.cfile = {
         test.done();
     },
 
+    testCFileParseMultiple2: function(test) {
+        test.expect(12);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse('char *screen_share_60 = (char *)resBundle_getLocString(res_bundle, "Block"); char *screen_share_67 = (char *)resBundle_getLocString(res_bundle, "Cancel"); localized_string = (gchar*)resBundle_getLocString(_g_res_bundle_object, "Please say \"Stop\" when you see the desired channel.");  // i18n Detail description');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
+
+        var r = set.getBySource("Block");
+        test.ok(r);
+        test.equal(r.getSource(), "Block");
+        test.equal(r.getKey(), "Block");
+
+        r = set.getBySource("Cancel");
+        test.ok(r);
+        test.equal(r.getSource(), "Cancel");
+        test.equal(r.getKey(), "Cancel");
+
+        var r = set.getBySource('Please say \"Stop\" when you see the desired channel.');
+        test.ok(r);
+        test.equal(r.getSource(), 'Please say \"Stop\" when you see the desired channel.');
+        test.equal(r.getKey(), 'Please say \"Stop\" when you see the desired channel.');
+        test.equal(r.getComment(), "Detail description");
+
+        test.done();
+    },
+
     testCFileParseMultipleWithKey: function(test) {
+        test.expect(11);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse('char *screen_share_60 = (char *)resBundle_getLocStringWithKey(res_bundle, "Block.key", "Block"); a.parse("This is another test."); char *screen_share_67 = (char *)resBundle_getLocStringWithKey(res_bundle, "Cancel.key","Cancel"); // i18n messages');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
+
+        var r = set.getBy({
+            reskey: "Block.key"
+        });
+        test.ok(r);
+        test.equal(r[0].getSource(), "Block");
+        test.ok(r[0].getAutoKey());
+        test.equal(r[0].getKey(), "Block.key");
+
+        r = set.getBy({
+            reskey: "Cancel.key"
+        });
+        test.ok(r);
+        test.equal(r[0].getSource(), "Cancel");
+        test.ok(r[0].getAutoKey());
+        test.equal(r[0].getKey(), "Cancel.key");
+        test.equal(r[0].getComment(), "messages");
+
+        test.done();
+    },
+
+    testCFileParseMultipleWithKey2: function(test) {
         test.expect(10);
 
         var cf = new CFile({

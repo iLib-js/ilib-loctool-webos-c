@@ -53,9 +53,22 @@ CFile.prototype.makeKey = function(source) {
     return source;
 };
 
-var reGetLocString = new RegExp(/\bresBundle_getLocString\((.*)\,\s*[\"](.*)*[\"]\)\;/g);
+CFile.trimComment = function(commentString) {
+    if (!commentString) return;
+
+    var trimComment = commentString.
+        replace(/\s*\*\//, "").
+        replace(/\s*\:\s*/, "").
+        replace(/\/\s*\**\s*/, "").
+        replace(/\s*\*\s*/, "");
+    return trimComment;
+}
+
+var reGetLocString = new RegExp(/\bresBundle_getLocString\(((\\"|[^"])*)((\\"|[^"])*)\"((\\"|[^"])*)"\)\;/g);
+var reGetLocStringComplex = new RegExp(/\bresBundle_getLocString\((.*)\,\s*[\"](.*)\"\)\;/g);
 var reGetLocStringWithKey = new RegExp(/\bresBundle_getLocStringWithKey\((.*)\,\s*[\"](.*)[\"]\,\s*[\"](.*)*[\"]\)/g);
-var reI18nComment = new RegExp("//\\s*i18n\\s*\\s*(.*)$");
+var reGetLocStringWithKeyComplex = new RegExp(/\bresBundle_getLocStringWithKey\(((\\"|[^"])*)((\\"|[^"])*)\"((\\"|[^"])*)\",\s*"((\\"|[^"])*)\"\);/g);
+var reI18nComment = new RegExp(/\/(\*|\/)\s*i18n\s*(.*)($|\*\/)/);
 
 /**
  * Parse the data string looking for the localizable strings and add them to the
@@ -71,8 +84,8 @@ CFile.prototype.parse = function(data) {
     // To extract resBundle_getLocString()
     reGetLocString.lastIndex = 0; // just to be safe
     var result = reGetLocString.exec(data);
-    while (result && result.length > 1 && result[2]) {
-        match = result[2];
+    while (result && result.length > 1 && result[5]) {
+        match = result[5];
 
         if (match && match.length) {
             logger.trace("Found string key: " + this.makeKey(match) + ", string: '" + match + "'");
@@ -81,7 +94,7 @@ CFile.prototype.parse = function(data) {
             last = (last === -1) ? data.length : last;
             var line = data.substring(reGetLocString.lastIndex, last);
             var commentResult = reI18nComment.exec(line);
-            comment = (commentResult && commentResult.length > 1) ? commentResult[1] : undefined;
+            comment = (commentResult && commentResult.length > 1) ? commentResult[2] : undefined;
 
             var r = this.API.newResource({
                 resType: "string",
@@ -92,7 +105,7 @@ CFile.prototype.parse = function(data) {
                 autoKey: true,
                 pathName: this.pathName,
                 state: "new",
-                comment: comment,
+                comment: CFile.trimComment(comment),
                 datatype: this.type.datatype,
                 index: this.resourceIndex++
             });
@@ -102,6 +115,42 @@ CFile.prototype.parse = function(data) {
             logger.warn("... " + data.substring(result.index, reGetString.lastIndex) + " ...");
         }
         result = reGetLocString.exec(data);
+    }
+
+    // To extract resBundle_getLocString() Complex
+    reGetLocStringComplex.lastIndex = 0; // just to be safe
+    var result = reGetLocStringComplex.exec(data);
+    while (result && result.length > 1 && result[2]) {
+        match = result[2];
+
+        if (match && match.length) {
+            logger.trace("Found string key: " + this.makeKey(match) + ", string: '" + match + "'");
+
+            var last = data.indexOf('\n', reGetLocStringComplex.lastIndex);
+            last = (last === -1) ? data.length : last;
+            var line = data.substring(reGetLocStringComplex.lastIndex, last);
+            var commentResult = reI18nComment.exec(line);
+            comment = (commentResult && commentResult.length > 1) ? commentResult[2] : undefined;
+
+            var r = this.API.newResource({
+                resType: "string",
+                project: this.project.getProjectId(),
+                key: match,
+                sourceLocale: this.project.sourceLocale,
+                source: match,
+                autoKey: true,
+                pathName: this.pathName,
+                state: "new",
+                comment: CFile.trimComment(comment),
+                datatype: this.type.datatype,
+                index: this.resourceIndex++
+            });
+            this.set.add(r);
+        } else {
+            logger.warn("Warning: Bogus empty string in get string call: ");
+            logger.warn("... " + data.substring(result.index, reGetString.lastIndex) + " ...");
+        }
+        result = reGetLocStringComplex.exec(data);
     }
 
     // To extract resBundle_getLocStringWithKey()
@@ -118,7 +167,7 @@ CFile.prototype.parse = function(data) {
             last = (last === -1) ? data.length : last;
             var line = data.substring(reGetLocStringWithKey.lastIndex, last);
             var commentResult = reI18nComment.exec(line);
-            comment = (commentResult && commentResult.length > 1) ? commentResult[1] : undefined;
+            comment = (commentResult && commentResult.length > 1) ? commentResult[2] : undefined;
 
             var r = this.API.newResource({
                 resType: "string",
@@ -129,7 +178,7 @@ CFile.prototype.parse = function(data) {
                 autoKey: true,
                 pathName: this.pathName,
                 state: "new",
-                comment: comment,
+                comment: CFile.trimComment(comment),
                 datatype: this.type.datatype,
                 index: this.resourceIndex++
             });
@@ -139,6 +188,43 @@ CFile.prototype.parse = function(data) {
             logger.warn("... " + data.substring(result.index, reGetString.lastIndex) + " ...");
         }
         result = reGetLocStringWithKey.exec(data);
+    }
+
+    // To extract resBundle_getLocStringWithKey()
+    reGetLocStringWithKeyComplex.lastIndex = 0; // just to be safe
+    var result = reGetLocStringWithKeyComplex.exec(data);
+    while (result && result.length > 1 && result[5]) {
+        match = result[7];
+        key = result[5];
+
+        if (match && match.length) {
+            logger.trace("Found string key: " + this.makeKey(match) + ", string: '" + match + "'");
+
+            var last = data.indexOf('\n', reGetLocStringWithKeyComplex.lastIndex);
+            last = (last === -1) ? data.length : last;
+            var line = data.substring(reGetLocStringWithKeyComplex.lastIndex, last);
+            var commentResult = reI18nComment.exec(line);
+            comment = (commentResult && commentResult.length > 1) ? commentResult[2] : undefined;
+
+            var r = this.API.newResource({
+                resType: "string",
+                project: this.project.getProjectId(),
+                key: key,
+                sourceLocale: this.project.sourceLocale,
+                source: match,
+                autoKey: true,
+                pathName: this.pathName,
+                state: "new",
+                comment: CFile.trimComment(comment),
+                datatype: this.type.datatype,
+                index: this.resourceIndex++
+            });
+            this.set.add(r);
+        } else {
+            logger.warn("Warning: Bogus empty string in get string call: ");
+            logger.warn("... " + data.substring(result.index, reGetString.lastIndex) + " ...");
+        }
+        result = reGetLocStringWithKeyComplex.exec(data);
     }
 };
 
