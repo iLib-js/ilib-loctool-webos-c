@@ -1,0 +1,1 @@
+localized_string = (gchar*)resBundle_getLocString(_g_res_bundle_object, "Please say \"Stop\" when you see the desired channel.");
