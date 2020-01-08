@@ -1,7 +1,7 @@
 /*
  * testCFile.js - test the c file handler object.
  *
- * Copyright © 2019, JEDLSoft
+ * Copyright © 2019-2020, JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -201,7 +201,7 @@ module.exports.cfile = {
         test.done();
     },
 
-    testCFileParseJSSimple: function(test) {
+    testCFileParseCSimple: function(test) {
         test.expect(5);
 
         var cf = new CFile({
@@ -224,7 +224,7 @@ module.exports.cfile = {
         test.done();
     },
 
-    testCFileParseJSSimple2: function(test) {
+    testCFileParseCSimple2: function(test) {
         test.expect(5);
 
         var cf = new CFile({
@@ -247,7 +247,7 @@ module.exports.cfile = {
         test.done();
     },
 
-    testCFileParseJSSimple3: function(test) {
+    testCFileParseCSimple3: function(test) {
         test.expect(6);
 
         var cf = new CFile({
@@ -400,7 +400,7 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); // i18n  /** Connect WiSA Dongle **/ ');
+        cf.parse('char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); // i18n  /** Connect WiSA Dongle **/');
 
         var set = cf.getTranslationSet();
         test.ok(set);
@@ -839,7 +839,7 @@ module.exports.cfile = {
     },
 
     testCFileExtractFile: function(test) {
-        test.expect(8);
+        test.expect(14);
 
         var cf = new CFile({
             project: p,
@@ -865,6 +865,20 @@ module.exports.cfile = {
         test.equal(r[0].getSource(), "Do you want to accept this request?");
         test.equal(r[0].getKey(), "Do you want to accept this request?");
 
+        var r = set.getBy({
+            reskey: "%s is blocked."
+        });
+        test.ok(r);
+        test.equal(r[0].getSource(), "%s is blocked.");
+        test.equal(r[0].getKey(), "%s is blocked.");
+
+        var r = set.getBy({
+            reskey: "\"Overlay Mode\" will be off now to start recording or Live Playback."
+        });
+        test.ok(r);
+        test.equal(r[0].getSource(), "\"Overlay Mode\" will be off now to start recording or Live Playback.");
+        test.equal(r[0].getKey(), "\"Overlay Mode\" will be off now to start recording or Live Playback.");
+
         test.done();
     },
 
@@ -886,7 +900,7 @@ module.exports.cfile = {
         test.done();
     },
     testCFileTest2: function(test) {
-        test.expect(5);
+        test.expect(8);
 
         var cf = new CFile({
             project: p,
@@ -897,12 +911,17 @@ module.exports.cfile = {
 
         cf.extract();
         var set = cf.getTranslationSet();
-        test.equal(set.size(), 1);
+        test.equal(set.size(), 2);
 
         var r = set.getBySource("Please say \"Stop\" when you see the desired channel.");
         test.ok(r);
         test.equal(r.getSource(), "Please say \"Stop\" when you see the desired channel.");
         test.equal(r.getKey(), "Please say \"Stop\" when you see the desired channel.");
+
+        var r = set.getBySource("You've declined the request from [{deviceName}].");
+        test.ok(r);
+        test.equal(r.getSource(), "You've declined the request from [{deviceName}].");
+        test.equal(r.getKey(), "You've declined the request from [{deviceName}].");
 
         test.done();
     },

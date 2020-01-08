@@ -1,7 +1,7 @@
 /*
  * CFile.js - plugin to extract resources from a C source code file
  *
- * Copyright © 2019, JEDLSoft
+ * Copyright © 2019-2020, JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,30 @@ var CFile = function(props) {
     this.API = props.project.getAPI();
 
     this.set = this.API.newTranslationSet(this.project ? this.project.sourceLocale : "zxx-XX");
+};
+
+/**
+ * Unescape the string to make the same string that would be
+ * in memory in the target programming language.
+ *
+ * @static
+ * @param {String} string the string to unescape
+ * @returns {String} the unescaped string
+ */
+CFile.unescapeString = function(string) {
+    var unescaped = string;
+
+    unescaped = unescaped.
+        replace(/\\\\n/g, "").                // line continuation
+        replace(/\\\n/g, "").                // line continuation
+        replace(/^\\\\/, "\\").             // unescape backslashes
+        replace(/([^\\])\\\\/g, "$1\\").
+        replace(/^\\'/, "'").               // unescape quotes
+        replace(/([^\\])\\'/g, "$1'").
+        replace(/^\\"/, '"').
+        replace(/([^\\])\\"/g, '$1"');
+
+    return unescaped;
 };
 
 /**
@@ -96,6 +120,8 @@ CFile.prototype.parse = function(data) {
             var commentResult = reI18nComment.exec(line);
             comment = (commentResult && commentResult.length > 1) ? commentResult[2] : undefined;
 
+            match = CFile.unescapeString(match);
+
             var r = this.API.newResource({
                 resType: "string",
                 project: this.project.getProjectId(),
@@ -131,7 +157,7 @@ CFile.prototype.parse = function(data) {
             var line = data.substring(reGetLocStringComplex.lastIndex, last);
             var commentResult = reI18nComment.exec(line);
             comment = (commentResult && commentResult.length > 1) ? commentResult[2] : undefined;
-
+            match = CFile.unescapeString(match);
             var r = this.API.newResource({
                 resType: "string",
                 project: this.project.getProjectId(),
@@ -168,7 +194,8 @@ CFile.prototype.parse = function(data) {
             var line = data.substring(reGetLocStringWithKey.lastIndex, last);
             var commentResult = reI18nComment.exec(line);
             comment = (commentResult && commentResult.length > 1) ? commentResult[2] : undefined;
-
+            match = CFile.unescapeString(match);
+            key = CFile.unescapeString(key);
             var r = this.API.newResource({
                 resType: "string",
                 project: this.project.getProjectId(),
@@ -205,7 +232,8 @@ CFile.prototype.parse = function(data) {
             var line = data.substring(reGetLocStringWithKeyComplex.lastIndex, last);
             var commentResult = reI18nComment.exec(line);
             comment = (commentResult && commentResult.length > 1) ? commentResult[2] : undefined;
-
+            match = CFile.unescapeString(match);
+            key = CFile.unescapeString(key);
             var r = this.API.newResource({
                 resType: "string",
                 project: this.project.getProjectId(),
