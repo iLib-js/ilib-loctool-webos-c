@@ -80,6 +80,19 @@ module.exports.cfile = {
         test.done();
     },
 
+    testCFileMakeKey2: function(test) {
+        test.expect(2);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+        test.equal(cf.makeKey("This is a \"real\" test"), "This is a \"real\" test");
+        test.done();
+    },
+
     testCFileMakeKeyWithSpace: function(test) {
         test.expect(2);
 
@@ -267,6 +280,52 @@ module.exports.cfile = {
         test.equal(r.getSource(), 'Please say \"Stop\" when you see the desired channel.');
         test.equal(r.getKey(), 'Please say \"Stop\" when you see the desired channel.');
         test.equal(r.getComment(), "Detail description");
+
+        test.done();
+    },
+
+    testCFileParseCSimple4: function(test) {
+        test.expect(5);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse('char *screen_share_58 = (char *)resBundle_getLocString(res_bundle, "This is a\n test");');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
+
+        var r = set.getBySource("This is a\n test");
+        test.ok(r);
+        test.equal(r.getSource(), "This is a\n test");
+        test.equal(r.getKey(), "This is a\n test");
+
+        test.done();
+    },
+
+    testCFileParseCSimple4: function(test) {
+        test.expect(5);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse('char *screen_share_58 = (char *)resBundle_getLocString(res_bundle, "This is a   \t test");');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
+
+        var r = set.getBySource("This is a   \t test");
+        test.ok(r);
+        test.equal(r.getSource(), "This is a   \t test");
+        test.equal(r.getKey(), "This is a   \t test");
 
         test.done();
     },
@@ -627,7 +686,7 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('char *screen_share_60 = (char *)resBundle_getLocStringWithKey(res_bundle, "Block.key", "Block");\n\ta.parse("This is another test.");\n\t\tchar *screen_share_67 = (char *)resBundle_getLocStringWithKey(res_bundle, "Cancel.key","Cancel");');
+        cf.parse('char *screen_share_60 = (char *)resBundle_getLocStringWithKey(res_bundle, "Block.key", "Block");\ta.parse("This is another test.");\n\t\tchar *screen_share_67 = (char *)resBundle_getLocStringWithKey(res_bundle, "Cancel.key","Cancel");');
 
         var set = cf.getTranslationSet();
         test.ok(set);

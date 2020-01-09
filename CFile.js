@@ -72,7 +72,7 @@ CFile.unescapeString = function(string) {
  * @returns {String} a unique key for this string
  */
 CFile.prototype.makeKey = function(source) {
-    return source;
+    return CFile.unescapeString(source);
 };
 
 CFile.trimComment = function(commentString) {
