@@ -81,7 +81,7 @@ void localization(void) {
 	char *screen_share_43 = (char *)resBundle_getLocString(res_bundle, "Overlay Mode is not available now.");
 	char *screen_share_54 = (char *)resBundle_getLocString(res_bundle, "%s requests screen sharing to your TV.");
 	char *screen_share_58 = (char *)resBundle_getLocString(res_bundle, "OK");
-	char *screen_share_59 = (char *)resBundle_getLocString(res_bundle, "Do you want to accept this request?");
+	char *screen_share_59 = (char *)resBundle_getLocString(res_bundle, "Do you want to \naccept this request?");
 	char *screen_share_60 = (char *)resBundle_getLocString(res_bundle, "Block");
 	char *screen_share_61 = (char *)resBundle_getLocString(res_bundle, "Decline");
 	char *screen_share_62 = (char *)resBundle_getLocString(res_bundle, "Accept");

@@ -775,7 +775,7 @@ module.exports.cfile = {
     },
 
     testCFileParseWithDups: function(test) {
-        test.expect(6);
+        test.expect(9);
 
         var cf = new CFile({
             project: p,
@@ -784,7 +784,7 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK");\n\tchar* notifi_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK");');
+        cf.parse('char* alert_btn_dup= (char *)resBundle_getLocString(notification_getResBundle(), "OK")char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "\tOK\n");\n\tchar* notifi_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK");');
         var set = cf.getTranslationSet();
         test.ok(set);
 
@@ -793,7 +793,12 @@ module.exports.cfile = {
         test.equal(r.getSource(), "OK");
         test.equal(r.getKey(), "OK");
 
-        test.equal(set.size(), 1);
+        var r = set.getBySource("\tOK\n");
+        test.ok(r);
+        test.equal(r.getSource(), "\tOK\n");
+        test.equal(r.getKey(), "\tOK\n");
+
+        test.equal(set.size(), 2);
 
         test.done();
     },
@@ -918,11 +923,11 @@ module.exports.cfile = {
         test.equal(r.getKey(), "Decline");
 
         var r = set.getBy({
-            reskey: "Do you want to accept this request?"
+            reskey: "Do you want to \naccept this request?"
         });
         test.ok(r);
-        test.equal(r[0].getSource(), "Do you want to accept this request?");
-        test.equal(r[0].getKey(), "Do you want to accept this request?");
+        test.equal(r[0].getSource(), "Do you want to \naccept this request?");
+        test.equal(r[0].getKey(), "Do you want to \naccept this request?");
 
         var r = set.getBy({
             reskey: "%s is blocked."
@@ -959,7 +964,7 @@ module.exports.cfile = {
         test.done();
     },
     testCFileTest2: function(test) {
-        test.expect(8);
+        test.expect(14);
 
         var cf = new CFile({
             project: p,
@@ -970,7 +975,7 @@ module.exports.cfile = {
 
         cf.extract();
         var set = cf.getTranslationSet();
-        test.equal(set.size(), 2);
+        test.equal(set.size(), 4);
 
         var r = set.getBySource("Please say \"Stop\" when you see the desired channel.");
         test.ok(r);
@@ -981,6 +986,16 @@ module.exports.cfile = {
         test.ok(r);
         test.equal(r.getSource(), "You've declined the request from [{deviceName}].");
         test.equal(r.getKey(), "You've declined the request from [{deviceName}].");
+
+        var r = set.getBySource("Hello\n\t there");
+        test.ok(r);
+        test.equal(r.getSource(), "Hello\n\t there");
+        test.equal(r.getKey(), "Hello\n\t there");
+
+        var r = set.getBySource("hi\n\t\t there \vwelcome");
+        test.ok(r);
+        test.equal(r.getSource(), "hi\n\t\t there \vwelcome");
+        test.equal(r.getKey(), "hi\n\t\t there \vwelcome");
 
         test.done();
     },

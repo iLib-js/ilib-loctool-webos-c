@@ -51,14 +51,15 @@ var CFile = function(props) {
  */
 CFile.unescapeString = function(string) {
     var unescaped = string;
-
     unescaped = unescaped.
         replace(/^\\\\/, "\\").             // unescape backslashes
         replace(/([^\\])\\\\/g, "$1\\").
-        replace(/^\\'/, "'").               // unescape quotes
-        replace(/([^\\])\\'/g, "$1'").
         replace(/^\\"/, '"').
-        replace(/([^\\])\\"/g, '$1"');
+        replace(/([^\\])\\"/g, '$1"').
+        replace(/\\"/g, '"').
+        replace(/\\n/g, "\n").
+        replace(/\\t/g, "\t").
+        replace(/\\v/g, "\v");
 
     return unescaped;
 };
