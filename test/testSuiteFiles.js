@@ -20,5 +20,4 @@
 module.exports.files = [
     "testCFileType.js",
     "testCFile.js"
-
 ];

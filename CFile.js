@@ -24,7 +24,7 @@ var log4js = require("log4js");
 var logger = log4js.getLogger("loctool.plugin.CFile");
 
 /**
- * Create a new java file with the given path name and within
+ * Create a new C file with the given path name and within
  * the given project.
  *
  * @param {Project} project the project object
@@ -87,10 +87,8 @@ CFile.trimComment = function(commentString) {
     return trimComment;
 }
 
-var reGetLocString = new RegExp(/\bresBundle_getLocString\(((\\"|[^"])*)((\\"|[^"])*)\"((\\"|[^"])*)"\)\;/g);
-var reGetLocStringComplex = new RegExp(/\bresBundle_getLocString\((.*)\,\s*[\"](.*)\"\)\;/g);
-var reGetLocStringWithKey = new RegExp(/\bresBundle_getLocStringWithKey\((.*)\,\s*[\"](.*)[\"]\,\s*[\"](.*)*[\"]\)/g);
-var reGetLocStringWithKeyComplex = new RegExp(/\bresBundle_getLocStringWithKey\(((\\"|[^"])*)((\\"|[^"])*)\"((\\"|[^"])*)\",\s*"((\\"|[^"])*)\"\);/g);
+var reGetLocString = new RegExp(/\bresBundle_getLocString\(\s*([^"][^,]*|"(\\"|[^"])*")\s*\,\s*"((\\"|[^"])*)"\s*\)/g);
+var reGetLocStringWithKey = new RegExp(/\bresBundle_getLocStringWithKey\(\s*([^"][^,]*|"(\\"|[^"])*")\s*\,\s*"((\\"|[^"])*)"\s*\,\s*"((\\"|[^"])*)"\)/g);
 var reI18nComment = new RegExp(/\/(\*|\/)\s*i18n\s*(.*)($|\*\/)/);
 
 /**
@@ -107,8 +105,8 @@ CFile.prototype.parse = function(data) {
     // To extract resBundle_getLocString()
     reGetLocString.lastIndex = 0; // just to be safe
     var result = reGetLocString.exec(data);
-    while (result && result.length > 1 && result[5]) {
-        match = result[5];
+    while (result && result.length > 1 && result[3]) {
+        match = result[3];
 
         if (match && match.length) {
             logger.trace("Found string key: " + this.makeKey(match) + ", string: '" + match + "'");
@@ -142,48 +140,12 @@ CFile.prototype.parse = function(data) {
         result = reGetLocString.exec(data);
     }
 
-    // To extract resBundle_getLocString() Complex
-    reGetLocStringComplex.lastIndex = 0; // just to be safe
-    var result = reGetLocStringComplex.exec(data);
-    while (result && result.length > 1 && result[2]) {
-        match = result[2];
-
-        if (match && match.length) {
-            logger.trace("Found string key: " + this.makeKey(match) + ", string: '" + match + "'");
-
-            var last = data.indexOf('\n', reGetLocStringComplex.lastIndex);
-            last = (last === -1) ? data.length : last;
-            var line = data.substring(reGetLocStringComplex.lastIndex, last);
-            var commentResult = reI18nComment.exec(line);
-            comment = (commentResult && commentResult.length > 1) ? commentResult[2] : undefined;
-            match = CFile.unescapeString(match);
-            var r = this.API.newResource({
-                resType: "string",
-                project: this.project.getProjectId(),
-                key: match,
-                sourceLocale: this.project.sourceLocale,
-                source: match,
-                autoKey: true,
-                pathName: this.pathName,
-                state: "new",
-                comment: CFile.trimComment(comment),
-                datatype: this.type.datatype,
-                index: this.resourceIndex++
-            });
-            this.set.add(r);
-        } else {
-            logger.warn("Warning: Bogus empty string in get string call: ");
-            logger.warn("... " + data.substring(result.index, reGetString.lastIndex) + " ...");
-        }
-        result = reGetLocStringComplex.exec(data);
-    }
-
     // To extract resBundle_getLocStringWithKey()
     reGetLocStringWithKey.lastIndex = 0; // just to be safe
     var result = reGetLocStringWithKey.exec(data);
-    while (result && result.length > 1 && result[2]) {
-        match = result[3];
-        key = result[2];
+    while (result && result.length > 1 && result[3] && result[5]) {
+        match = result[5];
+        key = result[3];
 
         if (match && match.length) {
             logger.trace("Found string key: " + this.makeKey(match) + ", string: '" + match + "'");
@@ -211,52 +173,14 @@ CFile.prototype.parse = function(data) {
             this.set.add(r);
         } else {
             logger.warn("Warning: Bogus empty string in get string call: ");
-            logger.warn("... " + data.substring(result.index, reGetString.lastIndex) + " ...");
+            logger.warn("... " + data.substring(result.index, reGetLocStringWithKey.lastIndex) + " ...");
         }
         result = reGetLocStringWithKey.exec(data);
-    }
-
-    // To extract resBundle_getLocStringWithKey()
-    reGetLocStringWithKeyComplex.lastIndex = 0; // just to be safe
-    var result = reGetLocStringWithKeyComplex.exec(data);
-    while (result && result.length > 1 && result[5]) {
-        match = result[7];
-        key = result[5];
-
-        if (match && match.length) {
-            logger.trace("Found string key: " + this.makeKey(match) + ", string: '" + match + "'");
-
-            var last = data.indexOf('\n', reGetLocStringWithKeyComplex.lastIndex);
-            last = (last === -1) ? data.length : last;
-            var line = data.substring(reGetLocStringWithKeyComplex.lastIndex, last);
-            var commentResult = reI18nComment.exec(line);
-            comment = (commentResult && commentResult.length > 1) ? commentResult[2] : undefined;
-            match = CFile.unescapeString(match);
-            key = CFile.unescapeString(key);
-            var r = this.API.newResource({
-                resType: "string",
-                project: this.project.getProjectId(),
-                key: key,
-                sourceLocale: this.project.sourceLocale,
-                source: match,
-                autoKey: true,
-                pathName: this.pathName,
-                state: "new",
-                comment: CFile.trimComment(comment),
-                datatype: this.type.datatype,
-                index: this.resourceIndex++
-            });
-            this.set.add(r);
-        } else {
-            logger.warn("Warning: Bogus empty string in get string call: ");
-            logger.warn("... " + data.substring(result.index, reGetString.lastIndex) + " ...");
-        }
-        result = reGetLocStringWithKeyComplex.exec(data);
     }
 };
 
 /**
- * Extract all the localizable strings from the java file and add them to the
+ * Extract all the localizable strings from the C file and add them to the
  * project's translation set.
  */
 CFile.prototype.extract = function() {
@@ -275,16 +199,16 @@ CFile.prototype.extract = function() {
 };
 
 /**
- * Return the set of resources found in the current JavaScript file.
+ * Return the set of resources found in the current C file.
  *
  * @returns {TranslationSet} The set of resources found in the
- * current JavaScript file.
+ * current C file.
  */
 CFile.prototype.getTranslationSet = function() {
     return this.set;
 }
 
-// we don't localize or write javascript source files
+// we don't localize or write c source files
 CFile.prototype.localize = function() {};
 CFile.prototype.write = function() {};
 

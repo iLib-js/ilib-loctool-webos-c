@@ -1,7 +1,7 @@
 /*
  * CFileType.js - Represents a collection of C files
  *
- * Copyright © 2019, JEDLSoft
+ * Copyright © 2019-2020, JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ var CFileType = function(project) {
  * by the current file type.
  *
  * @param {String} pathName path to the file being questions
- * @returns {boolean} true if the path is a java file, or false
+ * @returns {boolean} true if the path is a C file, or false
  * otherwise
  */
 CFileType.prototype.handles = function(pathName) {
@@ -162,7 +162,7 @@ CFileType.prototype.getResourceTypes = function() {
 
 /**
  * Return the name of the node module that implements the resource file type, or
- * the path to a javascript file that implements the resource filetype.
+ * the path to a C file that implements the resource filetype.
  * @returns {Function|undefined} node module name or path, or undefined if this file type does not
  * need resource files
  */

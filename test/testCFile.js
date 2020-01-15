@@ -247,53 +247,6 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('localized_string = (gchar*)resBundle_getLocString(_g_res_bundle_object, "Please say \"Stop\" when you see the desired channel.");');
-
-        var set = cf.getTranslationSet();
-        test.ok(set);
-
-        var r = set.getBySource('Please say \"Stop\" when you see the desired channel.');
-        test.ok(r);
-        test.equal(r.getSource(), 'Please say \"Stop\" when you see the desired channel.');
-        test.equal(r.getKey(), 'Please say \"Stop\" when you see the desired channel.');
-
-        test.done();
-    },
-
-    testCFileParseCSimple3: function(test) {
-        test.expect(6);
-
-        var cf = new CFile({
-            project: p,
-            pathName: undefined,
-            type: cft
-        });
-        test.ok(cf);
-
-        cf.parse('localized_string = (gchar*)resBundle_getLocString(_g_res_bundle_object, "Please say \"Stop\" when you see the desired channel.");  // i18n Detail description');
-
-        var set = cf.getTranslationSet();
-        test.ok(set);
-
-        var r = set.getBySource('Please say \"Stop\" when you see the desired channel.');
-        test.ok(r);
-        test.equal(r.getSource(), 'Please say \"Stop\" when you see the desired channel.');
-        test.equal(r.getKey(), 'Please say \"Stop\" when you see the desired channel.');
-        test.equal(r.getComment(), "Detail description");
-
-        test.done();
-    },
-
-    testCFileParseCSimple4: function(test) {
-        test.expect(5);
-
-        var cf = new CFile({
-            project: p,
-            pathName: undefined,
-            type: cft
-        });
-        test.ok(cf);
-
         cf.parse('char *screen_share_58 = (char *)resBundle_getLocString(res_bundle, "This is a\n test");');
 
         var set = cf.getTranslationSet();
@@ -307,7 +260,7 @@ module.exports.cfile = {
         test.done();
     },
 
-    testCFileParseCSimple4: function(test) {
+    testCFileParseCSimple3: function(test) {
         test.expect(5);
 
         var cf = new CFile({
@@ -608,7 +561,7 @@ module.exports.cfile = {
     },
 
     testCFileParseMultiple2: function(test) {
-        test.expect(12);
+        test.expect(9);
 
         var cf = new CFile({
             project: p,
@@ -617,7 +570,7 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('char *screen_share_60 = (char *)resBundle_getLocString(res_bundle, "Block"); char *screen_share_67 = (char *)resBundle_getLocString(res_bundle, "Cancel"); localized_string = (gchar*)resBundle_getLocString(_g_res_bundle_object, "Please say \"Stop\" when you see the desired channel.");  // i18n Detail description');
+        cf.parse('char *screen_share_60 = (char *)resBundle_getLocString(res_bundle, "Block"); char *screen_share_67 = (char *)resBundle_getLocString(res_bundle, "Cancel"); // i18n Detail description');
 
         var set = cf.getTranslationSet();
         test.ok(set);
@@ -631,11 +584,6 @@ module.exports.cfile = {
         test.ok(r);
         test.equal(r.getSource(), "Cancel");
         test.equal(r.getKey(), "Cancel");
-
-        var r = set.getBySource('Please say \"Stop\" when you see the desired channel.');
-        test.ok(r);
-        test.equal(r.getSource(), 'Please say \"Stop\" when you see the desired channel.');
-        test.equal(r.getKey(), 'Please say \"Stop\" when you see the desired channel.');
         test.equal(r.getComment(), "Detail description");
 
         test.done();
