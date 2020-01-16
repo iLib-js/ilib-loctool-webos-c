@@ -1,0 +1,58 @@
+{
+    "name": "ilib-loctool-webos-c",
+    "version": "1.0.0",
+    "main": "./CFileType.js",
+    "description": "A loctool plugin that knows how to process C files",
+    "license": "Apache-2.0",
+    "keywords": [
+        "internationalization",
+        "i18n",
+        "localization",
+        "l10n",
+        "globalization",
+        "g11n",
+        "strings",
+        "resources",
+        "locale",
+        "translation",
+        "c"
+    ],
+    "author": {
+        "name": "Goun Lee",
+        "email": "goun.lee@lge.com"
+    },
+    "contributors": [
+        {
+            "name": "Goun Lee",
+            "email": "goun.lee@lge.com"
+        }
+    ],
+    "files": [
+        "README.md",
+        "LICENSE",
+        "CFileType.js",
+        "CFile.js"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/iLib-js/ilib-loctool-webos-c.git"
+    },
+    "scripts": {
+        "dist": "npm pack",
+        "test": "node test/testSuite.js",
+        "debug": "node --inspect-brk test/testSuite.js",
+        "clean": "git clean -f -d *"
+    },
+    "engines": {
+        "node": ">=6.0"
+    },
+    "dependencies": {
+        "ilib": "^14.4.0",
+        "ilib-loctool-webos-json-resource": "^1.1.0",
+        "log4js": "^5.0.0"
+    },
+    "devDependencies": {
+        "loctool": "^2.4.0",
+        "nodeunit": "^0.11.3"
+    }
+}
