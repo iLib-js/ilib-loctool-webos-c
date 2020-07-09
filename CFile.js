@@ -20,7 +20,7 @@
 var fs = require("fs");
 var path = require("path");
 var log4js = require("log4js");
-
+log4js.configure(path.dirname(module.filename) + '/log4js.json');
 var logger = log4js.getLogger("loctool.plugin.CFile");
 
 /**

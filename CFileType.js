@@ -17,24 +17,19 @@
  * limitations under the License.
  */
 
-var fs = require("fs");
-var ilib = require("ilib");
-var Locale = require("ilib/lib/Locale.js");
-var log4js = require("log4js");
-
+var path = require("path");
 var CFile = require("./CFile.js");
 var JsonResourceFileType = require("ilib-loctool-webos-json-resource");
-
+var log4js = require("log4js");
+log4js.configure(path.dirname(module.filename) + '/log4js.json');
 var logger = log4js.getLogger("loctool.plugin.CFileType");
 
 var CFileType = function(project) {
     this.type = "c";
     this.datatype = "c";
     this.resourceType = "json";
-
     this.project = project;
     this.API = project.getAPI();
-
     this.extensions = [ ".c"];
 
     this.extracted = this.API.newTranslationSet(project.getSourceLocale());
