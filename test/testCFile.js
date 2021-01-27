@@ -1,7 +1,7 @@
 /*
  * testCFile.js - test the c file handler object.
  *
- * Copyright © 2019-2020, JEDLSoft
+ * Copyright © 2019-2021, JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -412,7 +412,7 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); // i18n  /** Connect WiSA Dongle **/');
+        cf.parse('char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); // i18n  Connect WiSA Dongle');
 
         var set = cf.getTranslationSet();
         test.ok(set);

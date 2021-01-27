@@ -1,7 +1,7 @@
 /*
  * CFile.js - plugin to extract resources from a C source code file
  *
- * Copyright © 2019-2020, JEDLSoft
+ * Copyright © 2019-2021, JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,6 +87,22 @@ CFile.trimComment = function(commentString) {
     return trimComment;
 }
 
+/**
+ * Remove single and multi-lines comments except for i18n comment style.
+ *
+ * @private
+ * @param {String} string the string to clean
+ * @returns {String} the cleaned string
+ */
+CFile.removeCommentLines = function(data) {
+    if (!data) return;
+    // comment style: // , /* */ single, multi line
+    var trimData = data.replace(/\/\/\s*((?!i18n).)*[$/\n]/g, "").
+                    replace(/\/\*+((?!i18n)[^*]|\*(?!\/))*\*+\//g, "").
+                    replace(/\/\*(((?!i18n).)*)\*\//g, "");
+    return trimData;
+};
+
 var reGetLocString = new RegExp(/\bresBundle_getLocString\(\s*([^"][^,]*|"(\\"|[^"])*")\s*\,\s*"((\\"|[^"])*)"\s*\)/g);
 var reGetLocStringWithKey = new RegExp(/\bresBundle_getLocStringWithKey\(\s*([^"][^,]*|"(\\"|[^"])*")\s*\,\s*"((\\"|[^"])*)"\s*\,\s*"((\\"|[^"])*)"\)/g);
 var reI18nComment = new RegExp(/\/(\*|\/)\s*i18n\s*(.*)($|\*\/)/);
@@ -98,6 +114,8 @@ var reI18nComment = new RegExp(/\/(\*|\/)\s*i18n\s*(.*)($|\*\/)/);
  */
 CFile.prototype.parse = function(data) {
     logger.debug("Extracting strings from " + this.pathName);
+
+    data = CFile.removeCommentLines(data);
     this.resourceIndex = 0;
 
     var comment, match, key;
