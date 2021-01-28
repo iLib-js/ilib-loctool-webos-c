@@ -960,8 +960,44 @@ module.exports.cfile = {
         cf.extract();
 
         var set = cf.getTranslationSet();
+        test.equal(set.size(), 2);
+
+        test.done();
+    },
+    testCFileNotParseCommentLine: function(test) {
+        test.expect(3);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse('// char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); // i18n : Power button');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
         test.equal(set.size(), 0);
 
         test.done();
-    }
+    },
+    testCFileNotParseCommentLine2: function(test) {
+        test.expect(3);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse(' char* btn= (char *)resBundle_getLocString(notification_getResBundle(), "CLICK"); /* char* btn2= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); */ ');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
+        test.equal(set.size(), 1);
+
+        test.done();
+    },
 };
