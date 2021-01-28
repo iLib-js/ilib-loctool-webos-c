@@ -1,7 +1,7 @@
 /*
  * testCFile.js - test the c file handler object.
  *
- * Copyright © 2019-2020, JEDLSoft
+ * Copyright © 2019-2021, JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -412,7 +412,7 @@ module.exports.cfile = {
         });
         test.ok(cf);
 
-        cf.parse('char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); // i18n  /** Connect WiSA Dongle **/');
+        cf.parse('char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); // i18n  Connect WiSA Dongle');
 
         var set = cf.getTranslationSet();
         test.ok(set);
@@ -960,8 +960,44 @@ module.exports.cfile = {
         cf.extract();
 
         var set = cf.getTranslationSet();
+        test.equal(set.size(), 2);
+
+        test.done();
+    },
+    testCFileNotParseCommentLine: function(test) {
+        test.expect(3);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse('// char* alert_btn= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); // i18n : Power button');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
         test.equal(set.size(), 0);
 
         test.done();
-    }
+    },
+    testCFileNotParseCommentLine2: function(test) {
+        test.expect(3);
+
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse(' char* btn= (char *)resBundle_getLocString(notification_getResBundle(), "CLICK"); /* char* btn2= (char *)resBundle_getLocString(notification_getResBundle(), "OK"); */ ');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
+        test.equal(set.size(), 1);
+
+        test.done();
+    },
 };
