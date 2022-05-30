@@ -1,7 +1,7 @@
 /*
  * CFileType.js - Represents a collection of C files
  *
- * Copyright (c) 2019-2021, JEDLSoft
+ * Copyright (c) 2019-2022, JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,8 @@
  * limitations under the License.
  */
 
-var path = require("path");
 var CFile = require("./CFile.js");
 var JsonResourceFileType = require("ilib-loctool-webos-json-resource");
-var log4js = require("log4js");
-log4js.configure(path.dirname(module.filename) + '/log4js.json');
-var logger = log4js.getLogger("loctool.plugin.CFileType");
 
 var CFileType = function(project) {
     this.type = "c";
@@ -31,10 +27,10 @@ var CFileType = function(project) {
     this.project = project;
     this.API = project.getAPI();
     this.extensions = [ ".c"];
-
     this.extracted = this.API.newTranslationSet(project.getSourceLocale());
     this.newres = this.API.newTranslationSet(project.getSourceLocale());
     this.pseudo = this.API.newTranslationSet(project.getSourceLocale());
+    this.logger = this.API.getLogger("loctool.plugin.webOSCFileType");
 };
 
 /**
@@ -46,13 +42,13 @@ var CFileType = function(project) {
  * otherwise
  */
 CFileType.prototype.handles = function(pathName) {
-    logger.debug("CFileType handles " + pathName + "?");
+    this.logger.debug("CFileType handles " + pathName + "?");
     var ret = false;
     if (pathName.length > 2 && pathName.substring(pathName.length - 2) === ".c") {
         ret = true;
     } 
 
-    logger.debug(ret ? "Yes" : "No");
+    this.logger.debug(ret ? "Yes" : "No");
     return ret;
 };
 
@@ -89,15 +85,15 @@ CFileType.prototype.write = function(translations, locales) {
 
         // for each extracted string, write out the translations of it
         translationLocales.forEach(function(locale) {
-            logger.trace("Localizing C strings to " + locale);
+            this.logger.trace("Localizing C strings to " + locale);
 
             db.getResourceByCleanHashKey(res.cleanHashKeyForTranslation(locale), function(err, translated) {
                 var r = translated;
                 if (!translated || ( this.API.utils.cleanString(res.getSource()) !== this.API.utils.cleanString(r.getSource()) &&
                     this.API.utils.cleanString(res.getSource()) !== this.API.utils.cleanString(r.getKey()))) {
                     if (r) {
-                        logger.trace("extracted   source: " + this.API.utils.cleanString(res.getSource()));
-                        logger.trace("translation source: " + this.API.utils.cleanString(r.getSource()));
+                        this.logger.trace("extracted   source: " + this.API.utils.cleanString(res.getSource()));
+                        this.logger.trace("translation source: " + this.API.utils.cleanString(r.getSource()));
                     }
                     var note = r && 'The source string has changed. Please update the translation to match if necessary. Previous source: "' + r.getSource() + '"';
                     var newres = res.clone();
@@ -108,7 +104,7 @@ CFileType.prototype.write = function(translations, locales) {
 
                     this.newres.add(newres);
 
-                    logger.trace("No translation for " + res.reskey + " to " + locale);
+                    this.logger.trace("No translation for " + res.reskey + " to " + locale);
                 } else {
                     if (res.reskey != r.reskey) {
                         // if reskeys don't match, we matched on cleaned string.
@@ -119,7 +115,7 @@ CFileType.prototype.write = function(translations, locales) {
 
                     file = resFileType.getResourceFile(locale);
                     file.addResource(r);
-                    logger.trace("Added " + r.reskey + " to " + file.pathName);
+                    this.logger.trace("Added " + r.reskey + " to " + file.pathName);
                 }
             }.bind(this));
         }.bind(this));
@@ -134,7 +130,7 @@ CFileType.prototype.write = function(translations, locales) {
         if (res.getTargetLocale() !== this.project.sourceLocale && res.getSource() !== res.getTarget()) {
             file = resFileType.getResourceFile(res.getTargetLocale());
             file.addResource(res);
-            logger.trace("Added " + res.reskey + " to " + file.pathName);
+            this.logger.trace("Added " + res.reskey + " to " + file.pathName);
         }
     }
 };
