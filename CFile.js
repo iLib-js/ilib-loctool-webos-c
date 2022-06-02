@@ -1,7 +1,7 @@
 /*
  * CFile.js - plugin to extract resources from a C source code file
  *
- * Copyright (c) 2019-2021, JEDLSoft
+ * Copyright (c) 2019-2022, JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,6 @@
 
 var fs = require("fs");
 var path = require("path");
-var log4js = require("log4js");
-log4js.configure(path.dirname(module.filename) + '/log4js.json');
-var logger = log4js.getLogger("loctool.plugin.CFile");
 
 /**
  * Create a new C file with the given path name and within
@@ -37,7 +34,7 @@ var CFile = function(props) {
     this.pathName = props.pathName;
     this.type = props.type;
     this.API = props.project.getAPI();
-
+    this.logger = this.API.getLogger("loctool.plugin.webOSCFile");
     this.set = this.API.newTranslationSet(this.project ? this.project.sourceLocale : "zxx-XX");
 };
 
@@ -113,7 +110,7 @@ var reI18nComment = new RegExp(/\/(\*|\/)\s*i18n\s*(.*)($|\*\/)/);
  * @param {String} data the string to parse
  */
 CFile.prototype.parse = function(data) {
-    logger.debug("Extracting strings from " + this.pathName);
+    this.logger.debug("Extracting strings from " + this.pathName);
 
     data = CFile.removeCommentLines(data);
     this.resourceIndex = 0;
@@ -127,7 +124,7 @@ CFile.prototype.parse = function(data) {
         match = result[3];
 
         if (match && match.length) {
-            logger.trace("Found string key: " + this.makeKey(match) + ", string: '" + match + "'");
+            this.logger.trace("Found string key: " + this.makeKey(match) + ", string: '" + match + "'");
 
             var last = data.indexOf('\n', reGetLocString.lastIndex);
             last = (last === -1) ? data.length : last;
@@ -152,8 +149,8 @@ CFile.prototype.parse = function(data) {
             });
             this.set.add(r);
         } else {
-            logger.warn("Warning: Bogus empty string in get string call: ");
-            logger.warn("... " + data.substring(result.index, reGetString.lastIndex) + " ...");
+            this.logger.warn("Warning: Bogus empty string in get string call: ");
+            this.logger.warn("... " + data.substring(result.index, reGetString.lastIndex) + " ...");
         }
         result = reGetLocString.exec(data);
     }
@@ -166,7 +163,7 @@ CFile.prototype.parse = function(data) {
         key = result[3];
 
         if (match && match.length) {
-            logger.trace("Found string key: " + this.makeKey(match) + ", string: '" + match + "'");
+            this.logger.trace("Found string key: " + this.makeKey(match) + ", string: '" + match + "'");
 
             var last = data.indexOf('\n', reGetLocStringWithKey.lastIndex);
             last = (last === -1) ? data.length : last;
@@ -190,8 +187,8 @@ CFile.prototype.parse = function(data) {
             });
             this.set.add(r);
         } else {
-            logger.warn("Warning: Bogus empty string in get string call: ");
-            logger.warn("... " + data.substring(result.index, reGetLocStringWithKey.lastIndex) + " ...");
+            this.logger.warn("Warning: Bogus empty string in get string call: ");
+            this.logger.warn("... " + data.substring(result.index, reGetLocStringWithKey.lastIndex) + " ...");
         }
         result = reGetLocStringWithKey.exec(data);
     }
@@ -202,7 +199,7 @@ CFile.prototype.parse = function(data) {
  * project's translation set.
  */
 CFile.prototype.extract = function() {
-    logger.debug("Extracting strings from " + this.pathName);
+    this.logger.debug("Extracting strings from " + this.pathName);
     if (this.pathName) {
         var p = path.join(this.project.root, this.pathName);
         try {
@@ -211,7 +208,7 @@ CFile.prototype.extract = function() {
                 this.parse(data);
             }
         } catch (e) {
-            logger.warn("Could not read file: " + p);
+            this.logger.warn("Could not read file: " + p);
         }
     }
 };
