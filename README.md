@@ -4,7 +4,7 @@
 ## Release Notes
 
 v1.1.6
-* updated dependencies. (loctool: 2.16.3)
+* Updated dependencies. (loctool: 2.16.3)
 * Used the logger provided by the loctool instead of using log4js directly.
 * Added node 16 version testing for circleCI. (minimum version of node is v10.0.0)
 
