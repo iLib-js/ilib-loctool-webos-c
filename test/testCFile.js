@@ -960,7 +960,7 @@ module.exports.cfile = {
         cf.extract();
 
         var set = cf.getTranslationSet();
-        test.equal(set.size(), 2);
+        test.equal(set.size(), 4);
 
         test.done();
     },

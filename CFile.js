@@ -95,8 +95,8 @@ CFile.removeCommentLines = function(data) {
     if (!data) return;
     // comment style: // , /* */ single, multi line
     var trimData = data.replace(/\/\/\s*((?!i18n).)*[$/\n]/g, "").
-                replace(/\/\*+((?!i18n)[^*]|\*(?!\/))*\*+\//g, "").
-                replace(/\/\*(((?!i18n).)*)\*\//g, "");
+                replace(/\/\*(((?!i18n).)*)\*\//g, "").
+                replace(/\/\*+((?!i18n)[^*]|\*(?!\/))*\*+\//g, "");
     return trimData;
 };
 
