@@ -3,7 +3,7 @@
 
 ## Release Notes
 
-v1.1.7
+v1.2.0
 * Updated dependencies. (loctool: 2.17.0)
 * Fixed an issue where strings are not extracted due to incorrect deletion of commented lines.
 * Updated to check language default locale translation not to generate duplicate resources.
