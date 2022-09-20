@@ -47,7 +47,7 @@
         "node": ">=10.0.0"
     },
     "dependencies": {
-        "ilib-loctool-webos-json-resource": "1.3.10"
+        "ilib-loctool-webos-json-resource": "1.3.11"
     },
     "devDependencies": {
         "assertextras": "^1.1.0",
