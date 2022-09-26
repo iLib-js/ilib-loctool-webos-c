@@ -82,7 +82,7 @@ CFileType.prototype.write = function(translations, locales) {
         }.bind(this));
 
     if (this.project.settings.localeMap) {
-        Utils.setBaseLocale(this.project.settings.localeMap);
+        Utils.setBaseLocale(this.project.localeMap);
     }
 
     for (var i = 0; i < resources.length; i++) {
