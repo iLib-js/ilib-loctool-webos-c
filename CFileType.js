@@ -81,7 +81,7 @@ CFileType.prototype.write = function(translations, locales) {
             return locale !== this.project.sourceLocale && locale !== this.project.pseudoLocale;
         }.bind(this));
 
-    if (this.project.settings.localeMap) {
+    if (this.project.localeMap) {
         Utils.setBaseLocale(this.project.localeMap);
     }
 
