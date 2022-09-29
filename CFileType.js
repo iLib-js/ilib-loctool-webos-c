@@ -33,7 +33,7 @@ var CFileType = function(project) {
     this.pseudo = this.API.newTranslationSet(project.getSourceLocale());
     this.logger = this.API.getLogger("loctool.plugin.webOSCFileType");
 
-    if (project.localeMap) {
+    if (Object.keys(project.localeMap).length > 0) {
         Utils.setBaseLocale(project.localeMap);
     }
 };
