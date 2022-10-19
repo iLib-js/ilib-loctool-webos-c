@@ -77,6 +77,7 @@ CFileType.prototype.write = function(translations, locales) {
     // and then let them write themselves out
 
     var resFileType = this.project.getResourceFileType(this.resourceType);
+    var mode = this.project.settings.mode;
     var baseLocale, langDefaultLocale, baseTranslation;
     var res, file,
         resources = this.extracted.getAll(),
@@ -85,70 +86,76 @@ CFileType.prototype.write = function(translations, locales) {
             return locale !== this.project.sourceLocale && locale !== this.project.pseudoLocale;
         }.bind(this));
 
-    for (var i = 0; i < resources.length; i++) {
-        res = resources[i];
-
-        // for each extracted string, write out the translations of it
-        translationLocales.forEach(function(locale) {
-            this.logger.trace("Localizing C strings to " + locale);
-
-            baseLocale = Utils.isBaseLocale(locale);
-            langDefaultLocale = Utils.getBaseLocale(locale);
-            baseTranslation = res.getSource();
-
-            if (baseLocale){
-                langDefaultLocale = "en-US";  // language default locale need to compare with root data
-            }
-
-            if (locale !== 'en-US' && (translationLocales.includes(langDefaultLocale))) {
-                db.getResourceByCleanHashKey(res.cleanHashKeyForTranslation(langDefaultLocale), function(err, translated) {
-                    if (translated) {
-                        baseTranslation = translated.getTarget();
+    if (mode === "localize") {
+        for (var i = 0; i < resources.length; i++) {
+            res = resources[i];
+    
+            // for each extracted string, write out the translations of it
+            translationLocales.forEach(function(locale) {
+                this.logger.trace("Localizing C strings to " + locale);
+    
+                baseLocale = Utils.isBaseLocale(locale);
+                langDefaultLocale = Utils.getBaseLocale(locale);
+                baseTranslation = res.getSource();
+    
+                if (baseLocale){
+                    langDefaultLocale = "en-US";  // language default locale need to compare with root data
+                }
+    
+                if (locale !== 'en-US' && (translationLocales.includes(langDefaultLocale))) {
+                    db.getResourceByCleanHashKey(res.cleanHashKeyForTranslation(langDefaultLocale), function(err, translated) {
+                        if (translated) {
+                            baseTranslation = translated.getTarget();
+                        }
+                    }.bind(this));
+                }
+    
+                db.getResourceByCleanHashKey(res.cleanHashKeyForTranslation(locale), function(err, translated) {
+                    var r = translated;
+                    if (!translated || ( this.API.utils.cleanString(res.getSource()) !== this.API.utils.cleanString(r.getSource()) &&
+                        this.API.utils.cleanString(res.getSource()) !== this.API.utils.cleanString(r.getKey()))) {
+                        if (r) {
+                            this.logger.trace("extracted   source: " + this.API.utils.cleanString(res.getSource()));
+                            this.logger.trace("translation source: " + this.API.utils.cleanString(r.getSource()));
+                        }
+                        var note = r && 'The source string has changed. Please update the translation to match if necessary. Previous source: "' + r.getSource() + '"';
+                        var newres = res.clone();
+                        newres.setTargetLocale(locale);
+                        newres.setTarget((r && r.getTarget()) || res.getSource());
+                        newres.setState("new");
+                        newres.setComment(note);
+    
+                        this.newres.add(newres);
+    
+                        this.logger.trace("No translation for " + res.reskey + " to " + locale);
+                    } else {
+                        if (res.reskey != r.reskey) {
+                            // if reskeys don't match, we matched on cleaned string.
+                            //so we need to overwrite reskey of the translated resource to match
+                            r = r.clone();
+                            r.reskey = res.reskey;
+                        }
+    
+                        if (baseTranslation != r.getTarget()) {
+                            file = resFileType.getResourceFile(locale);
+                            file.addResource(r);
+                            this.logger.trace("Added " + r.reskey + " to " + file.pathName);
+                        } else {
+                            this.logger.trace("Same translation as base translation for " + res.reskey + " to " + locale);
+                        }
                     }
                 }.bind(this));
-            }
-
-            db.getResourceByCleanHashKey(res.cleanHashKeyForTranslation(locale), function(err, translated) {
-                var r = translated;
-                if (!translated || ( this.API.utils.cleanString(res.getSource()) !== this.API.utils.cleanString(r.getSource()) &&
-                    this.API.utils.cleanString(res.getSource()) !== this.API.utils.cleanString(r.getKey()))) {
-                    if (r) {
-                        this.logger.trace("extracted   source: " + this.API.utils.cleanString(res.getSource()));
-                        this.logger.trace("translation source: " + this.API.utils.cleanString(r.getSource()));
-                    }
-                    var note = r && 'The source string has changed. Please update the translation to match if necessary. Previous source: "' + r.getSource() + '"';
-                    var newres = res.clone();
-                    newres.setTargetLocale(locale);
-                    newres.setTarget((r && r.getTarget()) || res.getSource());
-                    newres.setState("new");
-                    newres.setComment(note);
-
-                    this.newres.add(newres);
-
-                    this.logger.trace("No translation for " + res.reskey + " to " + locale);
-                } else {
-                    if (res.reskey != r.reskey) {
-                        // if reskeys don't match, we matched on cleaned string.
-                        //so we need to overwrite reskey of the translated resource to match
-                        r = r.clone();
-                        r.reskey = res.reskey;
-                    }
-
-                    if (baseTranslation != r.getTarget()) {
-                        file = resFileType.getResourceFile(locale);
-                        file.addResource(r);
-                        this.logger.trace("Added " + r.reskey + " to " + file.pathName);
-                    } else {
-                        this.logger.trace("Same translation as base translation for " + res.reskey + " to " + locale);
-                    }
-                }
             }.bind(this));
+        }
+    
+        resources = this.pseudo.getAll().filter(function(resource) {
+            return resource.datatype === this.datatype;
         }.bind(this));
     }
-
-    resources = this.pseudo.getAll().filter(function(resource) {
-        return resource.datatype === this.datatype;
-    }.bind(this));
+    else {
+        // generate mode
+        resources = this.project.getTranslations(translationLocales);
+    }
 
     for (var i = 0; i < resources.length; i++) {
         res = resources[i];
