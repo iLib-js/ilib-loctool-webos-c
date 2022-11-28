@@ -3,8 +3,24 @@
 
 ## Release Notes
 v1.3.0
-* Updated dependencies. (loctool: 2.19.0)
+* Updated dependencies. (loctool: 2.20.0)
 * Added ability to define custom locale inheritance.
+    ~~~~
+       "settings": {
+            "localeInherit": {
+                "en-AU": "en-GB"
+            }
+        }
+    ~~~~
+* Added ability to use common locale data.
+  * App's xliff data has a higher priority, if there's no matched string there, then loctool checks data in the commonXliff directory.
+    ~~~~
+       "settings": {
+            "webos": {
+                "commonXliff": "./common"
+            }
+        }
+    ~~~~
 
 v1.2.0
 * Updated dependencies. (loctool: 2.18.0)
