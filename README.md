@@ -5,6 +5,7 @@
 v1.3.0
 * Updated dependencies. (loctool: 2.20.0)
 * Added ability to define custom locale inheritance.
+  * i.e) en-AU inherits translations from en-GB
     ~~~~
        "settings": {
             "localeInherit": {
@@ -26,6 +27,13 @@ v1.2.0
 * Updated dependencies. (loctool: 2.18.0)
 * Updated to support loctool's generate mode.
 * Added ability to override language default locale.
+    ~~~~
+       "settings": {
+            "localeMap": {
+                "es-CO": "es"
+            }
+        }
+    ~~~~
 
 v1.1.7
 * Updated dependencies. (loctool: 2.17.0)
