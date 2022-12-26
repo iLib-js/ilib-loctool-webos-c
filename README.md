@@ -2,6 +2,13 @@
 ilib-webos-loctool-c is a plugin for the loctool allows it to read and localize c files. This plugins is optimized for webOS platform.
 
 ## Release Notes
+v1.4.0
+* Updated to custom locale inheritance feature work properly in generate mode.
+* Added guard code to prevent errors when the common data path is incorrect.
+* Updated to generate resources by comparing base translation data even in generate mode.
+* Fixed an issue where localeinherit related data was not created properly according to the order of locales.
+* Fixed an issue where data is duplicated when it is the same as base translation in generate mode.
+
 v1.3.0
 * Updated dependencies. (loctool: 2.20.0)
 * Added ability to define custom locale inheritance.
