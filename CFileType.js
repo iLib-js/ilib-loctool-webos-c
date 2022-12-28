@@ -69,6 +69,16 @@ CFileType.prototype.name = function() {
     return "C File Type";
 };
 
+CFileType.prototype._addResource = function(resFileType, translated, res, locale) {
+    var file;
+    var resource = translated.clone();
+    resource.project = res.getProject();
+    resource.datatype = res.getDataType();
+    resource.setTargetLocale(locale);
+    file = resFileType.getResourceFile(locale);
+    file.addResource(resource);
+}
+
 /**
  * Write out the aggregated resources for this file type. In
  * some cases, the string are written out to a common resource
@@ -103,7 +113,6 @@ CFileType.prototype.write = function(translations, locales) {
     if (mode === "localize") {
         for (var i = 0; i < resources.length; i++) {
             res = resources[i];
-    
             // for each extracted string, write out the translations of it
             translationLocales.forEach(function(locale) {
                 this.logger.trace("Localizing C strings to " + locale);
@@ -111,7 +120,6 @@ CFileType.prototype.write = function(translations, locales) {
                 baseLocale = Utils.isBaseLocale(locale);
                 langDefaultLocale = Utils.getBaseLocale(locale);
                 customInheritLocale = this.project.getLocaleInherit(locale);
-
                 baseTranslation = res.getSource();
     
                 if (baseLocale){
@@ -132,18 +140,11 @@ CFileType.prototype.write = function(translations, locales) {
                         var manipulateKey = ResourceString.hashKey(this.commonPrjName, locale, res.getKey(), this.commonPrjType, res.getFlavor());
                         db.getResourceByCleanHashKey(manipulateKey, function(err, translated) {
                             if (translated && (baseTranslation !== translated.getTarget())){
-                                var newres = translated.clone();
-                                newres.project = res.getProject();
-                                newres.datatype = res.getDataType();
-                                file = resFileType.getResourceFile(locale);
-                                file.addResource(newres);
+                                this._addResource(resFileType, translated, res, locale);
                             } else if(!translated && customInheritLocale){
                                 db.getResourceByCleanHashKey(res.cleanHashKeyForTranslation(customInheritLocale), function(err, translated) {
                                     if (translated && (baseTranslation !== translated.getTarget())){
-                                        var newres = translated.clone();
-                                        newres.setTargetLocale(locale);
-                                        file = resFileType.getResourceFile(locale);
-                                        file.addResource(newres);
+                                        this._addResource(resFileType, translated, res, locale);
                                     } else {
                                         var newres = res.clone();
                                         newres.setTargetLocale(locale);
@@ -167,10 +168,7 @@ CFileType.prototype.write = function(translations, locales) {
                     } else if (!translated && customInheritLocale) {
                         db.getResourceByCleanHashKey(res.cleanHashKeyForTranslation(customInheritLocale), function(err, translated) {
                             if (translated && (baseTranslation !== translated.getTarget())){
-                                var newres = translated.clone();
-                                newres.setTargetLocale(locale);
-                                file = resFileType.getResourceFile(locale);
-                                file.addResource(newres);
+                                this._addResource(resFileType, translated, res, locale);
                             } else {
                                 var newres = res.clone();
                                 newres.setTargetLocale(locale);
@@ -193,9 +191,7 @@ CFileType.prototype.write = function(translations, locales) {
                         newres.setTarget((r && r.getTarget()) || res.getSource());
                         newres.setState("new");
                         newres.setComment(note);
-    
                         this.newres.add(newres);
-    
                         this.logger.trace("No translation for " + res.reskey + " to " + locale);
                     } else {
                         if (res.reskey != r.reskey) {
@@ -231,7 +227,7 @@ CFileType.prototype.write = function(translations, locales) {
         if (this.customInherit.length > 0) {
             this.customInherit.forEach(function(lo){
                 var res = this.project.getTranslations([lo]);
-                if (res.length == 0) {
+                if (res.length === 0) {
                     var inheritlocale = this.project.getLocaleInherit(lo);
                     var inheritlocaleRes = this.project.getTranslations([inheritlocale]);
                     inheritlocaleRes.forEach(function(r){
