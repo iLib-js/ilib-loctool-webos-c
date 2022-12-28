@@ -96,7 +96,7 @@ CFileType.prototype.write = function(translations, locales) {
         }.bind(this));
 
     if (this.commonPath && !this.isloadCommonData) {
-        this._loadCommonXliff(translationLocales);
+        this._loadCommonXliff();
         this.isloadCommonData = true;
     }
 
@@ -111,9 +111,7 @@ CFileType.prototype.write = function(translations, locales) {
                 baseLocale = Utils.isBaseLocale(locale);
                 langDefaultLocale = Utils.getBaseLocale(locale);
                 customInheritLocale = this.project.getLocaleInherit(locale);
-                if (customInheritLocale) {
-                    langDefaultLocale = customInheritLocale;
-                }
+
                 baseTranslation = res.getSource();
     
                 if (baseLocale){
@@ -133,17 +131,19 @@ CFileType.prototype.write = function(translations, locales) {
                     if (!translated && this.isloadCommonData) {
                         var manipulateKey = ResourceString.hashKey(this.commonPrjName, locale, res.getKey(), this.commonPrjType, res.getFlavor());
                         db.getResourceByCleanHashKey(manipulateKey, function(err, translated) {
-                            if (translated) {
-                                translated.project = res.getProject();
-                                translated.datatype=res.getDataType();
+                            if (translated && (baseTranslation !== translated.getTarget())){
+                                var newres = translated.clone();
+                                newres.project = res.getProject();
+                                newres.datatype = res.getDataType();
                                 file = resFileType.getResourceFile(locale);
-                                file.addResource(translated);
+                                file.addResource(newres);
                             } else if(!translated && customInheritLocale){
                                 db.getResourceByCleanHashKey(res.cleanHashKeyForTranslation(customInheritLocale), function(err, translated) {
-                                    if (translated){
-                                        translated.setTargetLocale(locale);
+                                    if (translated && (baseTranslation !== translated.getTarget())){
+                                        var newres = translated.clone();
+                                        newres.setTargetLocale(locale);
                                         file = resFileType.getResourceFile(locale);
-                                        file.addResource(translated);
+                                        file.addResource(newres);
                                     } else {
                                         var newres = res.clone();
                                         newres.setTargetLocale(locale);
@@ -166,10 +166,11 @@ CFileType.prototype.write = function(translations, locales) {
                         }.bind(this));
                     } else if (!translated && customInheritLocale) {
                         db.getResourceByCleanHashKey(res.cleanHashKeyForTranslation(customInheritLocale), function(err, translated) {
-                            if (translated) {
-                                translated.setTargetLocale(locale);
+                            if (translated && (baseTranslation !== translated.getTarget())){
+                                var newres = translated.clone();
+                                newres.setTargetLocale(locale);
                                 file = resFileType.getResourceFile(locale);
-                                file.addResource(translated);
+                                file.addResource(newres);
                             } else {
                                 var newres = res.clone();
                                 newres.setTargetLocale(locale);
@@ -222,15 +223,69 @@ CFileType.prototype.write = function(translations, locales) {
     }
     else {
         // generate mode
-        resources = this.project.getTranslations(translationLocales);
+        this.genresources = this.project.getTranslations(translationLocales);
+        this.customInherit = translationLocales.filter(function(locale){
+            return this.project.getLocaleInherit(locale) !== undefined;
+        }.bind(this));
+
+        if (this.customInherit.length > 0) {
+            this.customInherit.forEach(function(lo){
+                var res = this.project.getTranslations([lo]);
+                if (res.length == 0) {
+                    var inheritlocale = this.project.getLocaleInherit(lo);
+                    var inheritlocaleRes = this.project.getTranslations([inheritlocale]);
+                    inheritlocaleRes.forEach(function(r){
+                        var newres = r.clone();
+                        newres.setTargetLocale(lo);
+                        this.genresources.push(newres);
+                    }.bind(this))
+                }
+            }.bind(this));
+        }
     }
 
-    for (var i = 0; i < resources.length; i++) {
-        res = resources[i];
-        if (res.getTargetLocale() !== this.project.sourceLocale && res.getSource() !== res.getTarget()) {
-            file = resFileType.getResourceFile(res.getTargetLocale());
-            file.addResource(res);
-            this.logger.trace("Added " + res.reskey + " to " + file.pathName);
+    if (mode === "localize") {
+        for (var i = 0; i < resources.length; i++) {
+            res = resources[i];
+            if (res.getTargetLocale() !== this.project.sourceLocale && res.getSource() !== res.getTarget()) {
+                file = resFileType.getResourceFile(res.getTargetLocale());
+                file.addResource(res);
+                this.logger.trace("Added " + res.reskey + " to " + file.pathName);
+            }
+        }
+    } else {
+        // generate mode:  compare baseTranslation data
+        var locale;
+        for (var i = 0; i< this.genresources.length;i++) {
+            res = this.genresources[i];
+            locale = res.getTargetLocale();
+            baseLocale = Utils.isBaseLocale(locale);
+            langDefaultLocale = Utils.getBaseLocale(locale);
+            baseTranslation = res.getSource();
+
+            if (baseLocale){
+                langDefaultLocale = "en-US";
+            }
+            var langkey = res.cleanHashKeyForTranslation(langDefaultLocale);
+            var enUSKey = res.cleanHashKeyForTranslation("en-US");
+            
+            db.getResourceByCleanHashKey(langkey, function(err, translated) {
+                if (translated){
+                    baseTranslation = translated.getTarget();
+                } else {
+                    db.getResourceByCleanHashKey(enUSKey, function(err, translated) {
+                        if (translated){
+                            baseTranslation = translated.getTarget();
+                        }
+                    }.bind(this));
+                }
+            }.bind(this));
+
+            if ((locale == "en-US" && res.getSource() !== res.getTarget()) ||
+                (baseTranslation !== res.getTarget())) {
+                file = resFileType.getResourceFile(res.getTargetLocale());
+                file.addResource(res);
+            }
         }
     }
 };
@@ -239,25 +294,27 @@ CFileType.prototype._loadCommonXliff = function() {
     if (fs.existsSync(this.commonPath)){
         var list = fs.readdirSync(this.commonPath);
     }
-    list.forEach(function(file){
-        var commonXliff = this.API.newXliff({
-            sourceLocale: this.project.getSourceLocale(),
-            project: this.project.getProjectId(),
-            path: this.commonPath,
-        });
-        var pathName = path.join(this.commonPath, file);
-        var data = fs.readFileSync(pathName, "utf-8");
-        commonXliff.deserialize(data);
-        var resources = commonXliff.getResources();
-        var localts = this.project.getRepository().getTranslationSet();
-        if (resources.length > 0){
-            this.commonPrjName = resources[0].getProject();
-            this.commonPrjType = resources[0].getDataType();
-            resources.forEach(function(res){
-                localts.add(res);
-            }.bind(this));
-        }
-    }.bind(this));
+    if (list && list.length !== 0) {
+        list.forEach(function(file){
+            var commonXliff = this.API.newXliff({
+                sourceLocale: this.project.getSourceLocale(),
+                project: this.project.getProjectId(),
+                path: this.commonPath,
+            });
+            var pathName = path.join(this.commonPath, file);
+            var data = fs.readFileSync(pathName, "utf-8");
+            commonXliff.deserialize(data);
+            var resources = commonXliff.getResources();
+            var localts = this.project.getRepository().getTranslationSet();
+            if (resources.length > 0){
+                this.commonPrjName = resources[0].getProject();
+                this.commonPrjType = resources[0].getDataType();
+                resources.forEach(function(res){
+                    localts.add(res);
+                }.bind(this));
+            }
+        }.bind(this));
+    }
 };
 
 CFileType.prototype.newFile = function(path) {
