@@ -97,7 +97,7 @@ CFileType.prototype.write = function(translations, locales) {
     var resFileType = this.project.getResourceFileType(this.resourceType);
     var mode = this.project.settings.mode;
     var baseLocale, langDefaultLocale, baseTranslation;
-    var customInheritLocale
+    var customInheritLocale;
     var res, file,
         resources = this.extracted.getAll(),
         db = this.project.db,
@@ -130,6 +130,13 @@ CFileType.prototype.write = function(translations, locales) {
                     db.getResourceByCleanHashKey(res.cleanHashKeyForTranslation(langDefaultLocale), function(err, translated) {
                         if (translated) {
                             baseTranslation = translated.getTarget();
+                        } else if (this.isloadCommonData) {
+                            var manipulateKey = ResourceString.hashKey(this.commonPrjName, langDefaultLocale, res.getKey(), this.commonPrjType, res.getFlavor());
+                            db.getResourceByCleanHashKey(manipulateKey, function(err, translated) {
+                                if (translated){
+                                    baseTranslation = translated.getTarget();
+                                }
+                            }.bind(this));
                         }
                     }.bind(this));
                 }
@@ -143,7 +150,22 @@ CFileType.prototype.write = function(translations, locales) {
                                 this._addResource(resFileType, translated, res, locale);
                             } else if(!translated && customInheritLocale){
                                 db.getResourceByCleanHashKey(res.cleanHashKeyForTranslation(customInheritLocale), function(err, translated) {
-                                    if (translated && (baseTranslation !== translated.getTarget())){
+                                    if (!translated){
+                                        var manipulateKey = ResourceString.hashKey(this.commonPrjName, customInheritLocale, res.getKey(), this.commonPrjType, res.getFlavor());
+                                        db.getResourceByCleanHashKey(manipulateKey, function(err, translated) {
+                                            if (translated && (baseTranslation !== translated.getTarget())) {
+                                                this._addResource(resFileType, translated, res, locale);
+                                            } else {
+                                                var newres = res.clone();
+                                                newres.setTargetLocale(locale);
+                                                newres.setTarget((r && r.getTarget()) || res.getSource());
+                                                newres.setState("new");
+                                                newres.setComment(note);
+                                                this.newres.add(newres);
+                                                this.logger.trace("No translation for " + res.reskey + " to " + locale);
+                                            }
+                                        }.bind(this));
+                                    } else if (translated && (baseTranslation !== translated.getTarget())){
                                         this._addResource(resFileType, translated, res, locale);
                                     } else {
                                         var newres = res.clone();
