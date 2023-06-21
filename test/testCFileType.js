@@ -38,7 +38,6 @@ module.exports.cfiletype = {
         test.ok(cft);
         test.done();
     },
-
     testCFileTypeHandlesCFileTrue: function(test) {
         test.expect(2);
 
@@ -55,7 +54,6 @@ module.exports.cfiletype = {
         test.ok(cft.handles("foo/bar/test.c"));
         test.done();
     },
-
     testCFileTypeHandlesJSXFalse: function(test) {
         test.expect(2);
 
@@ -72,7 +70,6 @@ module.exports.cfiletype = {
         test.ok(!cft.handles("foo.cpp"));
         test.done();
     },
-
     testCFileTypeHandlesFalseClose: function(test) {
         test.expect(2);
 

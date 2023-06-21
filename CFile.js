@@ -1,7 +1,7 @@
 /*
  * CFile.js - plugin to extract resources from a C source code file
  *
- * Copyright (c) 2019-2022, JEDLSoft
+ * Copyright (c) 2019-2023, JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,9 +51,9 @@ CFile.unescapeString = function(string) {
     unescaped = unescaped.
         replace(/^\\\\/, "\\").             // unescape backslashes
         replace(/([^\\])\\\\/g, "$1\\").
-        replace(/^\\"/, '"').
         replace(/([^\\])\\"/g, '$1"').
         replace(/\\"/g, '"').
+        replace(/\\'/g, "'").
         replace(/\\n/g, "\n").
         replace(/\\t/g, "\t").
         replace(/\\v/g, "\v");
