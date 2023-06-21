@@ -1,7 +1,7 @@
 /*
  * testCFile.js - test the c file handler object.
  *
- * Copyright (c) 2019-2021, JEDLSoft
+ * Copyright (c) 2019-2021,2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,6 @@ module.exports.cfile = {
         test.ok(cf);
         test.done();
     },
-
     testCFileConstructorParams: function(test) {
         test.expect(1);
 
@@ -54,7 +53,6 @@ module.exports.cfile = {
         test.ok(cf);
         test.done();
     },
-
     testCFileConstructorNoFile: function(test) {
         test.expect(1);
 
@@ -66,7 +64,6 @@ module.exports.cfile = {
         test.ok(cf);
         test.done();
     },
-
     testCFileMakeKey: function(test) {
         test.expect(2);
 
@@ -79,7 +76,6 @@ module.exports.cfile = {
         test.equal(cf.makeKey("This is a test"), "This is a test");
         test.done();
     },
-
     testCFileMakeKey2: function(test) {
         test.expect(2);
 
@@ -92,7 +88,6 @@ module.exports.cfile = {
         test.equal(cf.makeKey("This is a \"real\" test"), "This is a \"real\" test");
         test.done();
     },
-
     testCFileMakeKeyWithSpace: function(test) {
         test.expect(2);
 
@@ -105,7 +100,6 @@ module.exports.cfile = {
         test.equal(cf.makeKey(" This is a test "), " This is a test ");
         test.done();
     },
-
     testCFileMakeKeyWithSpaces: function(test) {
         test.expect(2);
 
@@ -118,7 +112,6 @@ module.exports.cfile = {
         test.equal(cf.makeKey("   This is a test   "), "   This is a test   ");
         test.done();
     },
-
     testCFileParseSimpleGetByKey: function(test) {
         test.expect(5);
 
@@ -144,7 +137,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseSimpleGetBySource: function(test) {
         test.expect(5);
 
@@ -167,7 +159,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseSimpleGetBySourceWithSpace: function(test) {
         test.expect(5);
 
@@ -190,7 +181,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseSimpleGetBySourceWithSpaces: function(test) {
         test.expect(5);
 
@@ -213,7 +203,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseCSimple: function(test) {
         test.expect(5);
 
@@ -236,7 +225,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseCSimple2: function(test) {
         test.expect(5);
 
@@ -259,7 +247,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseCSimple3: function(test) {
         test.expect(5);
 
@@ -282,7 +269,28 @@ module.exports.cfile = {
 
         test.done();
     },
+    testCFileParseCSinglequotes: function(test) {
+        test.expect(5);
 
+        var cf = new CFile({
+            project: p,
+            pathName: undefined,
+            type: cft
+        });
+        test.ok(cf);
+
+        cf.parse('char *screen_share_58 = (char *)resBundle_getLocString(res_bundle, "Don\'t save");');
+
+        var set = cf.getTranslationSet();
+        test.ok(set);
+
+        var r = set.getBySource("Don't save");
+        test.ok(r);
+        test.equal(r.getSource(), "Don't save");
+        test.equal(r.getKey(), "Don't save");
+
+        test.done();
+    },
     testCFileParseMoreComplex: function(test) {
         test.expect(5);
 
@@ -305,7 +313,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseSimpleWithTranslatorComment: function(test) {
         test.expect(6);
 
@@ -329,7 +336,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseSimpleWithTranslatorComment2: function(test) {
         test.expect(6);
 
@@ -353,7 +359,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseSimpleWithTranslatorComment3: function(test) {
         test.expect(6);
 
@@ -377,7 +382,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseSimpleWithTranslatorComment4: function(test) {
         test.expect(6);
 
@@ -401,7 +405,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseSimpleWithTranslatorComment5: function(test) {
         test.expect(6);
 
@@ -425,7 +428,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseSimpleWithTranslatorComment6: function(test) {
         test.expect(6);
 
@@ -449,7 +451,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseWithKey: function(test) {
         test.expect(5);
 
@@ -473,7 +474,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseWithKey2: function(test) {
         test.expect(8);
 
@@ -505,7 +505,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseWithKeyandComment: function(test) {
         test.expect(6);
 
@@ -531,7 +530,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseMultiple: function(test) {
         test.expect(8);
 
@@ -559,7 +557,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseMultiple2: function(test) {
         test.expect(9);
 
@@ -588,7 +585,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseMultipleWithKey: function(test) {
         test.expect(11);
 
@@ -623,7 +619,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseMultipleWithKey2: function(test) {
         test.expect(10);
 
@@ -657,7 +652,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseMultipleSameLine: function(test) {
         test.expect(12);
 
@@ -692,7 +686,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseMultipleWithComments: function(test) {
         test.expect(10);
 
@@ -721,7 +714,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseWithDups: function(test) {
         test.expect(9);
 
@@ -750,7 +742,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseBogusNonStringParam: function(test) {
         test.expect(2);
 
@@ -768,7 +759,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseEmptyParams: function(test) {
         test.expect(2);
 
@@ -786,7 +776,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParseWholeWord: function(test) {
         test.expect(2);
 
@@ -804,7 +793,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileParsePunctuationBeforeRB: function(test) {
         test.expect(12);
 
@@ -849,7 +837,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileExtractFile: function(test) {
         test.expect(14);
 
@@ -893,7 +880,6 @@ module.exports.cfile = {
 
         test.done();
     },
-
     testCFileExtractUndefinedFile: function(test) {
         test.expect(2);
 
@@ -912,7 +898,7 @@ module.exports.cfile = {
         test.done();
     },
     testCFileTest2: function(test) {
-        test.expect(14);
+        test.expect(17);
 
         var cf = new CFile({
             project: p,
@@ -923,7 +909,7 @@ module.exports.cfile = {
 
         cf.extract();
         var set = cf.getTranslationSet();
-        test.equal(set.size(), 4);
+        test.equal(set.size(), 5);
 
         var r = set.getBySource("Please say \"Stop\" when you see the desired channel.");
         test.ok(r);
@@ -944,6 +930,11 @@ module.exports.cfile = {
         test.ok(r);
         test.equal(r.getSource(), "hi\n\t\t there \vwelcome");
         test.equal(r.getKey(), "hi\n\t\t there \vwelcome");
+
+        var r = set.getBySource("Do you want to change the settings from \'Digital Sound Output\' to \'Pass Through\' to minimize audio delay while playing game?");
+        test.ok(r);
+        test.equal(r.getSource(), "Do you want to change the settings from 'Digital Sound Output' to 'Pass Through' to minimize audio delay while playing game?");
+        test.equal(r.getKey(), "Do you want to change the settings from 'Digital Sound Output' to 'Pass Through' to minimize audio delay while playing game?");
 
         test.done();
     },
