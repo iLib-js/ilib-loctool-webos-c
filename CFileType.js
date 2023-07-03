@@ -37,6 +37,26 @@ var CFileType = function(project) {
     this.pseudo = this.API.newTranslationSet(project.getSourceLocale());
     this.logger = this.API.getLogger("loctool.plugin.webOSCFileType");
 
+    // generate all the pseudo bundles we'll need
+    if (project.pseudoLocale && Array.isArray(project.pseudoLocale)) {
+        this.pseudos = {};
+        project.pseudoLocale && project.pseudoLocale.forEach(function(locale) {
+            var pseudo = this.API.getPseudoBundle(locale, this, project);
+            if (pseudo) {
+                this.pseudos[locale] = pseudo;
+            }
+        }.bind(this));
+    }
+    if (project.pseudoLocales && typeof project.pseudoLocales == 'object') {
+        this.pseudos = {};
+        for (locale in project.pseudoLocales) {
+            var pseudo = this.API.getPseudoBundle(locale, this, project);
+            if (pseudo) {
+                this.pseudos[locale] = pseudo;
+            }
+        }
+    }
+
     if (Object.keys(project.localeMap).length > 0) {
         Utils.setBaseLocale(project.localeMap);
     }
@@ -372,6 +392,24 @@ CFileType.prototype.getResourceFileType = function() {
  */
 CFileType.prototype.getExtracted = function() {
     return this.extracted;
+};
+
+/**
+ * Ensure that all resources collected so far have a pseudo translation.
+ */
+CFileType.prototype.generatePseudo = function(locale, pb) {
+    var resources = this.extracted.getBy({
+        sourceLocale: pb.getSourceLocale()
+    });
+    this.logger.trace("Found " + resources.length + " source resources for " + pb.getSourceLocale());
+
+    resources.forEach(function(resource) {
+        this.logger.trace("Generating pseudo for " + resource.getKey());
+        var res = resource.generatePseudo(locale, pb);
+        if (res && res.getSource() !== res.getTarget()) {
+            this.pseudo.add(res);
+        }
+    }.bind(this));
 };
 
 /**
