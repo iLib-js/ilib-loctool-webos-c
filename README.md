@@ -7,7 +7,7 @@ v1.7.0
 * Added ability to disable pseudo-localization in plugin when a project's pseudo-localization is enabled.
     ~~~~
        "settings": {
-            "javascript": {
+            "c": {
                 "disablePseudo": true
             }
         }
