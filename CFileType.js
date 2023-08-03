@@ -261,7 +261,9 @@ CFileType.prototype.write = function(translations, locales) {
                 }.bind(this));
             }.bind(this));
         }
-        if (this.project.settings[this.type] && (!this.project.settings[this.type].disablePseudo === true)){
+        resources = [];
+        if (this.project.settings[this.type] === undefined ||
+            (this.project.settings[this.type] && !(this.project.settings[this.type].disablePseudo === true))){
             resources = this.pseudo.getAll().filter(function(resource) {
                 return resource.datatype === this.datatype;
             }.bind(this));
