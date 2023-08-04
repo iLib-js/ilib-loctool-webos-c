@@ -1,6 +1,6 @@
 {
     "name": "ilib-loctool-webos-c",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "main": "./CFileType.js",
     "description": "A loctool plugin that knows how to process C files",
     "license": "Apache-2.0",
@@ -51,7 +51,7 @@
     },
     "devDependencies": {
         "assertextras": "^1.1.0",
-        "loctool": "2.21.0",
+        "loctool": "2.22.0",
         "nodeunit": "^0.11.3"
     }
 }
