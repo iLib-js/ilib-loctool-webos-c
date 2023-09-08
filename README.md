@@ -2,6 +2,9 @@
 ilib-webos-loctool-c is a plugin for the loctool allows it to read and localize c files. This plugins is optimized for webOS platform.
 
 ## Release Notes
+v1.7.2
+* Added `loctool` package to `peerDependencies` in `package.json`.
+
 v1.7.1
 * Updated dependencies. (loctool: 2.23.1)
 * Update to be included `npm-shrinkwrap.json` in the published files.
