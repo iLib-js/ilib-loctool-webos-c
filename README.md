@@ -10,7 +10,7 @@ resBundle_getLocStringWithKey(resBundle, "PictureMode.Standard", "Standard");
 
 #### Sample
 The simple sample is provided in [ilib-loctool-samples](https://github.com/iLib-js/ilib-loctool-samples) repository.
-Please check the [webos-c](https://github.com/iLib-js/ilib-loctool-samples/tree/main/webos-c) sample to see how the JavaScript file type is localized.
+Please check the [webos-c](https://github.com/iLib-js/ilib-loctool-samples/tree/main/webos-c) sample to see how the C file type is localized.
 
 ## License
 
