@@ -9,7 +9,7 @@ resBundle_getLocStringWithKey(resBundle, "PictureMode.Standard", "Standard");
 ```
 
 #### Sample
-The simple sample is provided in [ilib-loctool-samples](https://github.com/iLib-js/ilib-loctool-samples) repository.
+The simple sample is provided in the [ilib-loctool-samples](https://github.com/iLib-js/ilib-loctool-samples) repository.
 Please check the [webos-c](https://github.com/iLib-js/ilib-loctool-samples/tree/main/webos-c) sample to see how the C file type is localized.
 
 ## License
@@ -65,7 +65,7 @@ file for more details.
 ### v1.3.0
 * Updated dependencies. (loctool: 2.20.0)
 * Added ability to define custom locale inheritance.
-  * i.e) en-AU inherits translations from en-GB
+  * e.g. en-AU inherits translations from en-GB
     ~~~~
        "settings": {
             "localeInherit": {
