@@ -16,12 +16,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 if (!CFileType) {
     var CFileType = require("../CFileType.js");
     var CustomProject =  require("loctool/lib/CustomProject.js");
 }
-
 var p = new CustomProject({
     id: "app",
     plugins: ["../."],
@@ -29,45 +27,38 @@ var p = new CustomProject({
 }, "./testfiles", {
     locales:["en-GB"]
 });
-
 describe("cfiletype", function() {
     test("CFileTypeConstructor", function() {
         expect.assertions(1);
-
         var cft = new CFileType(p);
         expect(cft).toBeTruthy();
     });
     test("CFileTypeHandlesCFileTrue", function() {
         expect.assertions(2);
-
         var cft = new CFileType(p);
         expect(cft).toBeTruthy();
         expect(cft.handles("foo.c")).toBeTruthy();
     });
     test("CFileTypeHandlesCFileTrue2", function() {
         expect.assertions(2);
-
         var cft = new CFileType(p);
         expect(cft).toBeTruthy();
         expect(cft.handles("foo/bar/test.c")).toBeTruthy();
     });
     test("CFileTypeHandlesJSXFalse", function() {
         expect.assertions(2);
-
         var cft = new CFileType(p);
         expect(cft).toBeTruthy();
         expect(!cft.handles("foo.jsx")).toBeTruthy();
     });
     test("CFileTypeHandlesCppFalse", function() {
         expect.assertions(2);
-
         var cft = new CFileType(p);
         expect(cft).toBeTruthy();
         expect(!cft.handles("foo.cpp")).toBeTruthy();
     });
     test("CFileTypeHandlesFalseClose", function() {
         expect.assertions(2);
-
         var cft = new CFileType(p);
         expect(cft).toBeTruthy();
         expect(!cft.handles("fooc")).toBeTruthy();
