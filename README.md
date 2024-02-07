@@ -21,6 +21,7 @@ file for more details.
 
 ## Release Notes
 ### v1.7.4
+* Updated dependencies. (loctool: 2.24.0)
 * Converted all the unit tests from `nodeunit` to `jest`.
 
 ### v1.7.3
