@@ -48,13 +48,13 @@
         "node": ">=10.0.0"
     },
     "dependencies": {
-        "ilib-loctool-webos-json-resource": "1.5.8"
+        "ilib-loctool-webos-json-resource": "1.6.1"
     },
     "peerDependencies": {
-        "loctool": "2.23.1"
+        "loctool": "2.24.0"
     },
     "devDependencies": {
         "jest": "^26.6.3",
-        "loctool": "2.23.1"
+        "loctool": "2.24.0"
     }
 }
